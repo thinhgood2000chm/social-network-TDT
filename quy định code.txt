@@ -1,7 +1,11 @@
 đặt tên biến, hàm theo kiểu lac đà
 biến đại diện cho 1 giá trị nào đó đặt trong constant và ghi hoa vd PORT
 trong folder thuộc api các file đặt phải có hậu tố của folder đó phía sau như trong source 
+
+- git
 đặt tên commit git liên quan đến nội dung vừa làm 
+ko làm trực tiếp trên main develop, tự tạo 1 branch với tên cá nhân sau đó làm trên branch đó 
+khi làm xong sẽ tiến hành merge code vào develop
 lưu ý:
     ko query ktrong for 
     nếu tạo nhiều dữ liệu 1 lúc thì dùng bulk create 
