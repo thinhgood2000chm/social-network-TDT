@@ -1,0 +1,46 @@
+-tuần 1: lên thiết kế front end, tạo db, 
+tuàn 2: xây dựng base hệ thống, học reactjs 
+tuần 3: api đăng nhập, đăng kí, đăng xuất, api crud bài viết, chỉnh sửa thông tin cá nhân, học reactjs  
+tuần 4: bình luận bài viết, thích bài viết, học reactjs
+tuần 5: chia sẻ bài viết, nhận thông báo bài viết từ bạn bè, học react 
+tuần 6: tạo front end bằng react.
+tuần 7: ráp api đăng nhập, đăng xuất, api đăng nhập, đăng kí, đăng xuất, api crud bài viết, chỉnh sửa thông tin cá nhân
+tuần 8:  kết bạn, chat
+tuần 9: ráp api bình luận bài viết, thích bài viết
+tuần 10:rap api chia sẻ bài viết, nhận thông báo bài viết từ bạn bè
+tuần 11:
+
+thiết kế db
+bảng user 
+    iss: String,
+    hd: String,
+    fullname: String,
+    email: String,
+    picture: String,
+    given_name: String,
+    family_name: String,
+    username: String,
+    biography: String,
+    className: String,
+    faculty: String
+    post: [list]
+    friends:[id_user]
+    notification: [id_noti] id = 3 ( noti: T like bài viết của H)
+
+post:
+	user_id: string
+	content: string
+	video: string 
+	image: string
+	comment[]
+	like: [user_id]
+	share: [user_id]
+
+notification:
+	id: string
+	user_id: string
+	content: string
+
+chat:
+	pending 
+	
