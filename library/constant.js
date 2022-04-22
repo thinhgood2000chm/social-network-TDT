@@ -1,4 +1,9 @@
 const PORT = 8080;
-const test = 123;
+const BAD_REQUEST = 400;
+const SUCCESS_OK = 200;
+const NOT_FOUND = 404;
+const UNAUTHORIZED = 401;
+const FORBIDDEN = 403 
+const SERVER_ERROR = 500;
 
-module.exports = {PORT: PORT, test: test}
+module.exports = {PORT: PORT, BAD_REQUEST: BAD_REQUEST, FORBIDDEN:FORBIDDEN}

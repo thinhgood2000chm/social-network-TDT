@@ -1,7 +1,13 @@
+const {BAD_REQUEST} = require('../../library/constant')
+
 const account = require('../../models/user')
 const bcrypt = require("bcryptjs")
 
-exports.signup=(req,res)=>{
+const jwt = require("jsonwebtoken")
+const {JWT_SECRET}=process.env
+
+
+exports.register=(req,res)=>{
     var{fullname,username, password}= req.body;
  
     console.log("fullname",fullname);
@@ -30,10 +36,10 @@ exports.signup=(req,res)=>{
 exports.login=(req,res)=>{
     var{username, password} = req.body
     if (!username){
-        return res.status(400).json({"decription": "thiếu username"})
+        return res.status(BAD_REQUEST).json({"decription": "thiếu username"})
     }
     if (!password){
-        return res.status(400).json({"decription": "thiếu password"})
+        return res.status(BAD_REQUEST).json({"decription": "thiếu password"})
     }
     account.findOne({username:username}).then(
         account=>{
@@ -43,19 +49,27 @@ exports.login=(req,res)=>{
                         res.json({error:err})
                     }
                     if(result){
-                        // set cookie chỗ này
-                        let token = 123123123
+                        let token = jwt.sign({id: account._id},JWT_SECRET,{expiresIn:'1h'})
                         return res.json({"token": token})
                     }
                     else{
-                        return res.status(400).json({"decription": "Sai mật khẩu "})
+                        return res.status(BAD_REQUEST).json({"decription": "Sai mật khẩu "})
                     }
                 })
             }
             else
-                return res.status(400).json({"decription": "username không tồn tại "})
+                return res.status(BAD_REQUEST).json({"decription": "username không tồn tại "})
             
         }
     )
 
+}
+
+exports.oauth2 =(req,res)=>{
+    const headerAuthen = req.headers['authorization']
+    const bearerToken = headerAuthen.split(' ')[1]
+    console.log(bearerToken)
+    var user = jwt.decode(bearerToken, JWT_SECRET)
+    console.log(user)
+    return res.send("haha")
 }

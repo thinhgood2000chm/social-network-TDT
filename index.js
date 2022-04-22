@@ -1,13 +1,13 @@
 
+require('dotenv').config() // sử dụng cho file env
 const express = require('express')
 const mongoose= require("mongoose")
 
 const app = express()
 
 
-const {test, PORT} = require('./library/constant')
+const {PORT} = require('./library/constant')
 
-console.log(PORT, test)
 
 mongoose.connect("mongodb://localhost:27017/dacntt2",  
   // {useNewUrlParser:true, useUnifiedTopology:true, useCreateIndex: true}
