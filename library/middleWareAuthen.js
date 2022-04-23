@@ -18,7 +18,7 @@ function checkAuthen(req,res, next){
             if(err){
                 return res.sendStatus(FORBIDDEN)
             }
-            console.log(decode['id'])
+            console.log(decode['id'], "jajajaj" )
             req.userId = decode['id']
             next()
 
