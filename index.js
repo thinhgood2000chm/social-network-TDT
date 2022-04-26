@@ -24,6 +24,7 @@ db.once('open',()=>{
 
 app.use(express.json())
 app.use('/api', require('./api/routers/userRoute'))
+app.use('/api', require('./api/routers/commentRoute'))
 app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`)
   })

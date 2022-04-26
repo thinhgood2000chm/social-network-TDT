@@ -17,12 +17,12 @@ const accountSchema = new Schema({
         required:false,
         default:null
     },
-    given_name: {
+    givenName: {
         type:String,
         required:false,
         default:null
     },
-    family_name: {
+    familyName: {
         type:String,
         required:false,
         default:null

@@ -10,4 +10,5 @@ router.post("/account/oauth2",checkAuthen, userController.oauth2)
 router.get("/account/:userId", checkAuthen, userController.detail)
 router.put("/account/:userId", checkAuthen, userController.updateAccount)
 router.put('/account/:userId/password', checkAuthen, userController.changePassword)
+router.get("/profile/:userId", checkAuthen, userController.profile)
 module.exports=router
