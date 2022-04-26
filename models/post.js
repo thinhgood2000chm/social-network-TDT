@@ -2,18 +2,48 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const postSchema = new Schema({
-    user_id: String,
-    content: String,
-    image:[String],
+    userId: {
+        type:String,
+        required:true
+    },
+    content: {
+        type:String,
+        default: null
+    }, 
+    image: {
+        type:[String],
+        default: null
+    },
     comment: [{
-        emailUComment: String,
-        imageUserComment: String,
-        nameUserComment: String,
-        content: String,
+        userIdComment: {
+            type:String,
+            required:true
+        },
+        imageUserComment: {
+            type:String,
+            required:true
+        },
+        nameUserComment: {
+            type:String,
+            required:true
+        },
+        content: {
+            type:String,
+            required:true
+        }
     }],
-    video: String,
-    like: [String],
-    share:[String]
+    video: {
+        type:String,
+        default: null
+    },
+    like: {
+        type:[String],
+        default: null
+    },
+    share:{
+        type:[String],
+        default: null
+    }
 },{timestamps:true})
 const post = mongoose.model("post", postSchema, "post")
 
