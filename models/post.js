@@ -15,6 +15,6 @@ const postSchema = new Schema({
     like: [String],
     share:[String]
 },{timestamps:true})
-const post = mongoose.model("post",postSchema,"post")
+const post = mongoose.model("post", postSchema, "post")
 
-module.exports= post
+module.exports = post
