@@ -4,5 +4,6 @@ const postController = require('../controllers/postCtrl')
 
 const checkAuthen = require('../../library/middleWareAuthen')
 
-router.get("/post", postController.getPost)
-router.post("/post", checkAuthen, postController.addPost)
+router.get("/post", postController.getPosts)
+router.get("/post/:postID", postController.getPost)
+router.delete("/post/:postID", checkAuthen, postController.deletePost)
