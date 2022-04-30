@@ -47,11 +47,20 @@ const accountSchema = new Schema({
         required:false,
         default:null
     },
-    post:{
-        type:[String],
-        required:false,
-        default:null
-    },
+    post:[{
+        // nếu là bài tự đăng thì sharepostId sẽ null, còn bài share thì sẽ có đủ id của sharePost và rootPost
+        // cần 2 id để check không được share 1 bài viết 2 lần trở lên ( trừ th đã xóa bài share đó và share lại thì được)
+        rootPostId: { // bài gốc: id bài tự đăng hoặc id của bài mà đã share 
+            type:String,
+            required:false,
+            default:null
+        },
+        sharePostId: { // id được tạo sau khi bấm share bài người khác 
+            type:String,
+            required:false,
+            default:null
+        }, 
+    }],
     friends:{
         type:[String],
         required:false,
