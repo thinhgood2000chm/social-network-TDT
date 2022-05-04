@@ -1,6 +1,7 @@
-const {BAD_REQUEST, USER_NOT_FOUND, POST_NOT_FOUND, CASTERROR, NOT_THING_CHANGE} = require('../../library/constant')
+const {BAD_REQUEST, USER_NOT_FOUND, POST_NOT_FOUND, CASTERROR, NOT_THING_CHANGE, SUCCESS_OK} = require('../../library/constant')
 const post = require('../../models/post')
 const account = require('../../models/user')
+const router = require('../routers/commentRoute')
 
 
 exports.createComment = (req,res)=>{
@@ -33,4 +34,36 @@ exports.createComment = (req,res)=>{
         })
     })
   
+}
+
+exports.deleteComment = (req,res)=>{
+    var{postId, commentId} = req.params
+    post.find({_id:postId, 'comment._id': commentId}, {comment:{
+        "$elemMatch":{
+            "_id": commentId
+        }
+    }})
+    .then((postInfo)=>{
+        // kiểm tra xem đây có phải comment của người đang thực hiện thao tác xóa hay không 
+        commentInfo = postInfo[0].comment[0]
+        if(req.userId === commentInfo.userIdComment){
+            post.findByIdAndUpdate(postId, {$pull:{comment:{_id:commentId}}}).then(()=>{
+                return res.sendStatus(SUCCESS_OK)
+            })
+        }
+        // phải dùng else, ko dùng giống python thì sẽ dính lỗi bất đồng bộ
+        else{
+            return res.json({
+                "description":"user hiện tại không có quyền xóa comment của user khác "
+            })
+        }
+
+    })
+    .catch(err=>{
+        if(err.name ==CASTERROR)
+            return res.status(BAD_REQUEST).json({"description": POST_NOT_FOUND})
+        return res.status(BAD_REQUEST).json({
+            "error":err.name
+        })
+    })
 }

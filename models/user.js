@@ -66,7 +66,7 @@ const accountSchema = new Schema({
         required: false,
         default: null
     },
-    notification: {
+    notification: { // lưu lai id thông báo 
         type: [String],
         required: false,
         default: null

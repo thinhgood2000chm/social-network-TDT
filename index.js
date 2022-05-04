@@ -13,9 +13,10 @@ app.use(express.json())
 app.use('/api', AccountRouter)
 app.use('/api', PostRoute)
 app.use('/api', CommentRoute)
-
+app.use('/api', require('./api/routers/likeRoute'))
+app.use('/api', require('./api/routers/shareRoute'))
 // mongodb://localhost:27017/dacntt2 sẽ lỗi "connect ECONNREFUSED ::1:27017"
-mongoose.connect("mongodb://0.0.0.0:27017/dacntt2",
+mongoose.connect("mongodb://localhost:27017/dacntt2",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -26,3 +27,17 @@ mongoose.connect("mongodb://0.0.0.0:27017/dacntt2",
   .catch((e) => console.log("Khong the ket noi toi db server: " + e.message));
 
 
+
+// db.once('open',()=>{
+//     console.log(" database  da duoc ket noi");
+// })
+
+// app.use(express.json())
+// app.use('/api', require('./api/routers/userRoute'))
+// app.use('/api', require('./api/routers/commentRoute'))
+// app.use('/api', require('./api/routers/likeRoute'))
+// app.use('/api', require('./api/routers/shareRoute'))
+
+// app.listen(PORT, () => {
+//     console.log(`Example app listening on port ${PORT}`)
+//   })
