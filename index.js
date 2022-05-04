@@ -1,30 +1,28 @@
-
 require('dotenv').config() // sử dụng cho file env
 const express = require('express')
-const mongoose= require("mongoose")
+const mongoose = require("mongoose")
 
+const { PORT } = require('./library/constant')
 const app = express()
-
-
-const {PORT} = require('./library/constant')
-
-
-mongoose.connect("mongodb://localhost:27017/dacntt2",  
-  // {useNewUrlParser:true, useUnifiedTopology:true, useCreateIndex: true}
-  {useNewUrlParser:true, useUnifiedTopology:true}
-)
-const db = mongoose.connection;
-db.on("error",(err)=>{
-    console.log(err);
-})
-
-db.once('open',()=>{
-    console.log(" database  da duoc ket noi");
-})
+// router
+const AccountRouter = require('./api/routers/userRoute')
+const PostRoute = require('./api/routers/postRoute')
+const CommentRoute = require('./api/routers/commentRoute')
 
 app.use(express.json())
-app.use('/api', require('./api/routers/userRoute'))
-app.use('/api', require('./api/routers/commentRoute'))
-app.listen(PORT, () => {
-    console.log(`Example app listening on port ${PORT}`)
+app.use('/api', AccountRouter)
+app.use('/api', PostRoute)
+app.use('/api', CommentRoute)
+
+// mongodb://localhost:27017/dacntt2 sẽ lỗi "connect ECONNREFUSED ::1:27017"
+mongoose.connect("mongodb://0.0.0.0:27017/dacntt2",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
+  .then(() => {
+    const httpServer = app.listen(PORT, () => console.log("http://localhost:" + PORT))
+  })
+  .catch((e) => console.log("Khong the ket noi toi db server: " + e.message));
+
+
