@@ -8,15 +8,17 @@ const app = express()
 const AccountRouter = require('./api/routers/userRoute')
 const PostRoute = require('./api/routers/postRoute')
 const CommentRoute = require('./api/routers/commentRoute')
+const likeRoute = require('./api/routers/likeRoute')
+const shareRoute = require('./api/routers/shareRoute') 
 
 app.use(express.json())
 app.use('/api', AccountRouter)
 app.use('/api', PostRoute)
 app.use('/api', CommentRoute)
-app.use('/api', require('./api/routers/likeRoute'))
-app.use('/api', require('./api/routers/shareRoute'))
+app.use('/api', likeRoute )
+app.use('/api', shareRoute)
 // mongodb://localhost:27017/dacntt2 sẽ lỗi "connect ECONNREFUSED ::1:27017"
-mongoose.connect("mongodb://localhost:27017/dacntt2",
+mongoose.connect("mongodb://0.0.0.0:27017/dacntt2",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
