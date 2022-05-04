@@ -37,14 +37,14 @@ const postSchema = new Schema({
         default: null
     },
     like: {
-        type:[String],
+        type:Array,
         default: null
     },
-    share:{
-        type:[String],
+    rootPost:{
+        type:String,
         default: null
-    }
+    },
 },{timestamps:true})
-const post = mongoose.model("post",postSchema,"post")
+const post = mongoose.model("post", postSchema, "post")
 
-module.exports= post
+module.exports = post

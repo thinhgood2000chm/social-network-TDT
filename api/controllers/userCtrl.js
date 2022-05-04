@@ -1,80 +1,80 @@
-const {BAD_REQUEST, USER_NOT_FOUND, SUCCESS_OK, GET_SOME_ERROR_WHEN_UPDATE, NOT_THING_CHANGE} = require('../../library/constant')
+const { BAD_REQUEST, USER_NOT_FOUND, SUCCESS_OK, GET_SOME_ERROR_WHEN_UPDATE, NOT_THING_CHANGE } = require('../../library/constant')
 
 const account = require('../../models/user')
 const bcrypt = require("bcryptjs")
 
 const jwt = require("jsonwebtoken")
 const { json } = require('express/lib/response')
-const {JWT_SECRET}=process.env
+const { JWT_SECRET } = process.env
 
 
-exports.register=(req,res)=>{
-    var{givenName, familyName,username, password}= req.body;
-    account.findOne({username: username}, (err, data)=>{
-        if(data){
-            return res.json({"description": "username exist"})
+exports.register = (req, res) => {
+    var { givenName, familyName, username, password } = req.body;
+    account.findOne({ username: username }, (err, data) => {
+        if (data) {
+            return res.json({ "description": "username exist" })
         }
 
-        bcrypt.hash(password, 10, (err, hashedPass)=>{
-            if(err){
+        bcrypt.hash(password, 10, (err, hashedPass) => {
+            if (err) {
                 return res.json({
-                   error:err
+                    error: err
                 })
             }
-           
+
             let newAccount = new account({
-                fullname:`${givenName} ${familyName}`,
-                picture:'https://images.squarespace-cdn.com/content/v1/5930dc9237c5817c00b10842/1557979868721-ZFEVPV8NS06PZ21ZC174/ke17ZwdGBToddI8pDm48kBtpJ0h6oTA_T7DonTC8zFdZw-zPPgdn4jUwVcJE1ZvWQUxwkmyExglNqGp0IvTJZamWLI2zvYWH8K3-s_4yszcp2ryTI0HqTOaaUohrI8PIBqmMCQ1OP129tpEIJko8bi_9nfbnt8dRsNvtvnXdL8M/images.png',
+                fullname: `${givenName} ${familyName}`,
+                picture: 'https://images.squarespace-cdn.com/content/v1/5930dc9237c5817c00b10842/1557979868721-ZFEVPV8NS06PZ21ZC174/ke17ZwdGBToddI8pDm48kBtpJ0h6oTA_T7DonTC8zFdZw-zPPgdn4jUwVcJE1ZvWQUxwkmyExglNqGp0IvTJZamWLI2zvYWH8K3-s_4yszcp2ryTI0HqTOaaUohrI8PIBqmMCQ1OP129tpEIJko8bi_9nfbnt8dRsNvtvnXdL8M/images.png',
                 givenName: givenName,
                 familyName: familyName,
                 username: username,
                 password: hashedPass,
             })
             newAccount.save()
-            .then((data)=>{
-                return res.json(data)
-            })
-            .catch(e=>console.log(e))
-        
+                .then((data) => {
+                    return res.json(data)
+                })
+                .catch(e => console.log(e))
+
         })
     })
-  
+
 }
 
-exports.login=(req,res)=>{
-    var{username, password} = req.body
-    if (!username){
-        return res.status(BAD_REQUEST).json({"description": "thiếu username"})
+exports.login = (req, res) => {
+    var { username, password } = req.body
+    if (!username) {
+        return res.status(BAD_REQUEST).json({ "description": "thiếu username" })
     }
-    if (!password){
-        return res.status(BAD_REQUEST).json({"description": "thiếu password"})
+    if (!password) {
+        return res.status(BAD_REQUEST).json({ "description": "thiếu password" })
     }
-    account.findOne({username:username}).then(
-        account=>{
-            bcrypt.compare(password,account.password,(err, result)=>{
-                if(err){
-                    res.json({error:err})
+    account.findOne({ username: username }).then(
+        account => {
+            bcrypt.compare(password, account.password, (err, result) => {
+                if (err) {
+                    res.json({ error: err })
                 }
-                if(result){
-                    let token = jwt.sign({id: account._id},JWT_SECRET,{expiresIn:'1h'})
+                if (result) {
+                    let token = jwt.sign({ id: account._id }, JWT_SECRET, { expiresIn: '1h' })
                     return res.json({
                         "token": token,
                         "userInfo": account
-                    })  
+                    })
                 }
-                else{
-                    return res.status(BAD_REQUEST).json({"description": "Sai mật khẩu "})
+                else {
+                    return res.status(BAD_REQUEST).json({ "description": "Sai mật khẩu " })
                 }
             })
-            
+
         }
-    ).catch(err=> {
-        return res.status(BAD_REQUEST).json({"description": "username không tồn tại ", "error": err})
+    ).catch(err => {
+        return res.status(BAD_REQUEST).json({ "description": "username không tồn tại ", "error": err })
     })
 
 }
 
-exports.oauth2 =(req,res)=>{
+exports.oauth2 = (req, res) => {
     const headerAuthen = req.headers['authorization']
     const bearerToken = headerAuthen.split(' ')[1]
     console.log(bearerToken)
@@ -83,13 +83,13 @@ exports.oauth2 =(req,res)=>{
     return res.send("haha")
 }
 
-exports.detail=(req,res)=>{
-    var {userId} = req.params
+exports.detail = (req, res) => {
+    var { userId } = req.params
 
     // kiểm tra id của user bằng cách lấy id sau khi decode của bearer token 
     // bước này chỉ để tránh query vào db nếu sai thôi
-    if (userId !== req.userId){
-        return res.json({"description":USER_NOT_FOUND})
+    if (userId !== req.userId) {
+        return res.json({ "description": USER_NOT_FOUND })
     }
     // chỗ này nếu sửa lại if (userinfo){
     //     for(i=0;i<1000;i++){
@@ -100,18 +100,18 @@ exports.detail=(req,res)=>{
     // return res.send("hehe")
     // thì hehe sẽ chạy trước( đây 1 vấn đề bất đồng bộ trong js)
     // nên cần else để tránh việc này 
-    account.findById(userId, (err, userInfo)=>{
+    account.findById(userId, (err, userInfo) => {
         // kiểm tra thêm trong này cho chắc 
-        if (err){
+        if (err) {
             // return res.json({"description":USER_NOT_FOUND})
-            return res.json({"description":USER_NOT_FOUND})
+            return res.json({ "description": USER_NOT_FOUND })
         }
-        else{
+        else {
             return res.json({
                 "id": userInfo._id,
                 "givenName": userInfo.givenName,
-                "familyName":userInfo.familyName,
-                "fullname":userInfo.fullname,
+                "familyName": userInfo.familyName,
+                "fullname": userInfo.fullname,
                 "username": userInfo.username,
                 "biography": userInfo.biography,
                 "className": userInfo.className,
@@ -121,79 +121,79 @@ exports.detail=(req,res)=>{
         }
 
     })
- 
+
 }
 
-exports.updateAccount = (req,res)=>{
+exports.updateAccount = (req, res) => {
     // hình ảnh sẽ up sau vif chưa tìm được host lưu trữ
-    var {givenName, familyName, username, biography, className, faculty}=req.body
+    var { givenName, familyName, username, biography, className, faculty } = req.body
     //var pciture = req.files;
-    var {userId} = req.params
-    if(userId){
-        data ={
-            givenName:givenName,
-            familyName:familyName,
+    var { userId } = req.params
+    if (userId) {
+        data = {
+            givenName: givenName,
+            familyName: familyName,
             fullname: `${givenName} ${familyName}`,
-            username:username,
-            biography:biography,
-            className:className,
-            faculty:faculty,
+            username: username,
+            biography: biography,
+            className: className,
+            faculty: faculty,
             //picture:picrute
         }
         // newAccount =await account.findByIdAndUpdate(userId, data,  {new: true}).exec()
-        account.findByIdAndUpdate(userId, data,  {new: true})
-        .then(user=>{
+        account.findByIdAndUpdate(userId, data, { new: true })
+            .then(user => {
                 return res.json(user)
-        })
-        .catch((err)=>{
-            res.json({"description": GET_SOME_ERROR_WHEN_UPDATE, "error": err})
-        })
+            })
+            .catch((err) => {
+                res.json({ "description": GET_SOME_ERROR_WHEN_UPDATE, "error": err })
+            })
     }
 
 }
 
 // dùng async await vì promise và funtion callback hell
-exports.changePassword =async(req,res)=>{
-    var{newPassword, oldPassword} = req.body
-    var{userId} = req.params
-    if (oldPassword){
+exports.changePassword = async (req, res) => {
+    var { newPassword, oldPassword } = req.body
+    var { userId } = req.params
+    if (oldPassword) {
         currentAccount = await account.findById(userId).exec()
-        if(currentAccount){
-            if(await bcrypt.compare(oldPassword, currentAccount.password)){
-                if (newPassword === oldPassword){
-                    return res.json({"description":NOT_THING_CHANGE})
+        if (currentAccount) {
+            if (await bcrypt.compare(oldPassword, currentAccount.password)) {
+                if (newPassword === oldPassword) {
+                    return res.json({ "description": NOT_THING_CHANGE })
                 }
                 hashedPass = await bcrypt.hash(newPassword, 10)
-                if(hashedPass){
+                if (hashedPass) {
                     currentAccount.password = hashedPass
                     currentAccount.save()
                     return res.json(currentAccount)
-      
+
                 }
-                else{
+                else {
                     return res.json({
-                        error:err
+                        error: err
                     })
                 }
             }
-            else{
-                return res.json({"description":"wrong password"})
+            else {
+                return res.json({ "description": "wrong password" })
             }
         }
-    
+
     }
 
 }
 
-exports.profile = (req, res)=>{
+exports.profile = (req, res) => {
     userId = req.params
-    account.findById(userId, (err, profile)=>{
+    account.findById(userId, (err, profile) => {
         // kiểm tra thêm trong này cho chắc 
-        if (err){
+        if (err) {
             // return res.json({"description":USER_NOT_FOUND})
-            return res.json({"description":USER_NOT_FOUND})
+            return res.json({ "description": USER_NOT_FOUND })
         }
-        else{
+        else {
             return res.json(profile)
         }
 
