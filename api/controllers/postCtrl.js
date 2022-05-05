@@ -133,7 +133,7 @@ exports.deletePost = (req, res) => {
     PostModel.findOneAndRemove({ _id: postID, userId: userId })
         .then(data => {
             AccountModel.findByIdAndUpdate(userId, { $pull: { post: { rootPostId: postID } } })
-                .then((accountUpdate) => {
+                .then(() => {
                     return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data })
                 })
         })
