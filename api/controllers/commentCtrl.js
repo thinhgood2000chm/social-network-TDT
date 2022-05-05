@@ -1,13 +1,14 @@
 const {BAD_REQUEST, USER_NOT_FOUND, POST_NOT_FOUND, CASTERROR, NOT_THING_CHANGE, SUCCESS_OK} = require('../../library/constant')
 const post = require('../../models/post')
 const account = require('../../models/user')
+const notification = require('../../models/notification')
 const router = require('../routers/commentRoute')
 
 
 exports.createComment = (req,res)=>{
     var {postId} = req.params
-    var {userIdComment, content} = req.body
-    
+    var {content} = req.body
+    var userIdComment = req.userId
     account.findById(userIdComment)
     .then((userinfo)=>{
         dataUpdate = {
@@ -18,7 +19,27 @@ exports.createComment = (req,res)=>{
         }
         post.findByIdAndUpdate(postId,{$push:{comment: dataUpdate}}, {new:true})
         .then((postInfo)=>{
-            return res.json(postInfo.comment[postInfo.comment.length-1])
+            newNotification = new notification(
+                {
+                    userIdGuest: userIdComment,
+                    content: `${userinfo.fullname} đã bình luận bài viết của bạn`
+                }
+
+            )
+            newNotification.save()
+            .then(
+                (newNoti)=>{
+                    // cập nhật lại thông báo cho user nhân được thông báo
+                    account.findByIdAndUpdate(postInfo.userId,  {$push:{notification:newNoti._id}})
+                    .then(()=>{
+                        return res.json(postInfo.comment[postInfo.comment.length-1])
+                    })
+                    .catch(err=>{
+                        return res.send(err.name)
+                    })
+                }
+            )
+
         })
         .catch(error=>{
             if(error.name ==CASTERROR)

@@ -1,19 +1,39 @@
 const post = require('../../models/post')
 const account = require('../../models/user')
 const {BAD_REQUEST, USER_NOT_FOUND, POST_NOT_FOUND, CASTERROR, NOT_THING_CHANGE, SUCCESS_OK} = require('../../library/constant')
-
+const notification = require('../../models/notification')
 exports.likePost = (req,res)=>{
     var {postId} = req.params
     var userIdLike = req.userId
     account.findById(userIdLike)
-    .then(()=>{
+    .then((userLikeInfo)=>{
         post.findByIdAndUpdate(postId, {$push:{like:userIdLike}}, {new: true})
         .then((postInfo)=>{
-            console.log(postInfo)
-            res.json({"length":postInfo.like.length})
+            newNotification = new notification(
+                {
+                    userIdGuest: userIdLike,
+                    content: `${userLikeInfo.fullname} đã thích bài viết của bạn`
+                }
+
+            )
+            newNotification.save()
+            .then(
+                (newNotification)=>{
+                    // cập nhật lại cho user của bài viết chuỗi id của thông báo vừa tạo
+                    account.findByIdAndUpdate(postInfo.userId, {$push:{notification:newNotification._id}})
+                    .then(()=>{
+                       return  res.json({"length":postInfo.like.length})
+                    })
+                    .catch(err=>{
+                        return res.send(err.name)
+                    })
+                }
+              
+            )
+
+
         })
         .catch(err=>{
-            console.log("da vao")
             res.send(err.name)
         })
     })
@@ -23,6 +43,6 @@ exports.likePost = (req,res)=>{
 
         }
     })
-    post.findByIdAndUpdate()
+
 
 }

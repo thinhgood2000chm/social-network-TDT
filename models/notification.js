@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const notificationSchema = new Schema({
-    id: string,
-    user_id: string,
-    content: string
+    id: String,
+    userIdGuest: String,
+    content: String,
+    deletedFlag: {
+        type: Boolean,
+        default: false
+    }
 },{timestamps:true})
 const notification = mongoose.model("notification",notificationSchema,"notification")
 
