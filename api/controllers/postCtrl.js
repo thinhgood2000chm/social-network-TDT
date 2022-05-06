@@ -3,6 +3,7 @@ const { BAD_REQUEST, USER_NOT_FOUND, SUCCESS_OK, GET_SOME_ERROR_WHEN_UPDATE, NOT
 const { json } = require('express')
 const fs = require('fs');
 const { cloudinary } = require('../../library/cloundinary');
+const getLinkYoutube = require('../../library/getLinkYoutube')
 
 const PostModel = require('../../models/post')
 const AccountModel = require('../../models/user')
@@ -36,20 +37,14 @@ exports.createPost = async (req, res) => {
     let userId = req.userId
     let { postContent, postVideo } = req.body
 
-    //- upload video with link youtube
-    let videoUploadNew = null
+    // video
+    let linkVideo = null
     if (postVideo) {
-        let pathVideo = 'https://www.youtube.com/embed/'
-        let video_id = postVideo.slice(32)
-        // lấy id của youtube ( vì một số id có thêm chuỗi kí tự = sẽ ko tách thủ công được )
-        let ampersandPosition = video_id.indexOf('&');
-        if (ampersandPosition != -1) {
-            video_id = video_id.substring(0, ampersandPosition);
-        }
-        videoUploadNew = pathVideo + video_id
+        linkVideo = getLinkYoutube(postVideo);
     }
-    //- upload image
-    postImages = req.files;// file đối với single , files đối với multi  
+
+    // upload image
+    postImages = req.files// file đối với single , files đối với multi  
     let image = null
     if (postImages) {
         image = []
@@ -63,12 +58,12 @@ exports.createPost = async (req, res) => {
         userId: userId,
         content: postContent,
         image: image,
-        video: videoUploadNew
+        video: linkVideo
     })
     newPost.save()
         .then((data) => {
             AccountModel.findByIdAndUpdate(userId, { $push: { post: { rootPostId: data._id } } }, { new: true })
-                .then((accountUpdate) => {
+                .then(() => {
                     return res.status(SUCCESS_OK).json({ data: data })
                 })
 
@@ -84,21 +79,10 @@ exports.updatePost = async (req, res) => {
     let { postContent, postVideo } = req.body
 
     // video
-    if (postVideo.includes("watch")) {
-        var pathVideo = 'https://www.youtube.com/embed/'
-        var video_id = postVideo.slice(32)
-        var ampersandPosition = video_id.indexOf('&');
-        if (ampersandPosition != -1) {
-            video_id = video_id.substring(0, ampersandPosition);
-        }
-
-        var videoUploadNew = pathVideo + video_id
-    } else if (!videoUpload) {
-        var pathVideo = 'https://www.youtube.com/embed/'
-        videoUploadNew = pathVideo
+    let linkVideo = null
+    if (postVideo) {
+        linkVideo = getLinkYoutube(postVideo)
     }
-    else
-        videoUploadNew = postVideo
 
     // image
     postImages = req.files;// file đối với single , files đối với multi  
@@ -114,7 +98,7 @@ exports.updatePost = async (req, res) => {
     newData = {
         content: postContent,
         image: image,
-        video: videoUploadNew
+        video: linkVideo
     }
 
     PostModel.findOneAndUpdate({ _id: postID, userId: userId }, { $set: newData })
@@ -132,6 +116,9 @@ exports.deletePost = (req, res) => {
     let userId = req.userId
     PostModel.findOneAndRemove({ _id: postID, userId: userId })
         .then(data => {
+            // AccountModel.updateMany({ }
+            //                         , { $pull: { post: { rootPostId: postID }, post: { sharePostId: postID } } }
+            //                         )
             AccountModel.findByIdAndUpdate(userId, { $pull: { post: { rootPostId: postID } } })
                 .then(() => {
                     return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data })
