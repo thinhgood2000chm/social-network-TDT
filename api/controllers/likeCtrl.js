@@ -5,6 +5,8 @@ const notification = require('../../models/notification')
 exports.likePost = (req,res)=>{
     var {postId} = req.params
     var userIdLike = req.userId
+    var test = req.file
+    console.log(test)
     account.findById(userIdLike)
     .then((userLikeInfo)=>{
 
