@@ -44,16 +44,20 @@ exports.createPost = async (req, res) => {
     }
 
     // upload image
-    postImages = req.files// file đối với single , files đối với multi  
+    let postImages = req.files // file đối với single , files đối với multi
+    console.log(postImages)
     let image = null
     if (postImages) {
         image = []
-        await Promise.all(images.map(async (file) => {
+        await Promise.all(postImages.map(async (file) => {
             const cloud = await cloudinary.uploader.upload(file.path)
             image.push(cloud.url)
+            // remove temp file in public/upload
+            fs.unlinkSync(file.path)
         }))
     }
 
+    // save
     let newPost = new PostModel({
         userId: userId,
         content: postContent,
@@ -85,16 +89,18 @@ exports.updatePost = async (req, res) => {
     }
 
     // image
-    postImages = req.files;// file đối với single , files đối với multi  
+    let postImages = req.files // file đối với single , files đối với multi
     let image = null
     if (postImages) {
         image = []
-        await Promise.all(images.map(async (file) => {
+        await Promise.all(postImages.map(async (file) => {
             const cloud = await cloudinary.uploader.upload(file.path)
             image.push(cloud.url)
+            fs.unlinkSync(file.path)
         }))
     }
 
+    // save
     newData = {
         content: postContent,
         image: image,
