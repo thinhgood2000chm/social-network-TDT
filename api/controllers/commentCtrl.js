@@ -19,26 +19,34 @@ exports.createComment = (req,res)=>{
         }
         post.findByIdAndUpdate(postId,{$push:{comment: dataUpdate}}, {new:true})
         .then((postInfo)=>{
-            newNotification = new notification(
-                {
-                    userIdGuest: userIdComment,
-                    content: `${userinfo.fullname} đã bình luận bài viết của bạn`
-                }
+            if (userIdComment !== postInfo.userId){
 
-            )
-            newNotification.save()
-            .then(
-                (newNoti)=>{
-                    // cập nhật lại thông báo cho user nhân được thông báo
-                    account.findByIdAndUpdate(postInfo.userId,  {$push:{notification:newNoti._id}})
-                    .then(()=>{
-                        return res.json(postInfo.comment[postInfo.comment.length-1])
-                    })
-                    .catch(err=>{
-                        return res.send(err.name)
-                    })
-                }
-            )
+                newNotification = new notification(
+                    {
+                        userId: postInfo.userId,
+                        userIdGuest: userIdComment,
+                        content: `${userinfo.fullname} đã bình luận bài viết của bạn`
+                    }
+    
+                )
+                newNotification.save()
+                .then(
+                    (newNoti)=>{
+                        // cập nhật lại dữ liệu thông báo cho user của bài viết để user này nhận được thông báo
+                        account.findByIdAndUpdate(postInfo.userId,  {$push:{notification:newNoti._id}})
+                        .then(()=>{
+                            return res.json(postInfo.comment[postInfo.comment.length-1])
+                        })
+                        .catch(err=>{
+                            return res.send(err.name)
+                        })
+                    }
+                )
+            }
+            else{
+                return res.json(postInfo.comment[postInfo.comment.length-1])
+            }
+
 
         })
         .catch(error=>{

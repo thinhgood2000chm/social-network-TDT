@@ -42,10 +42,11 @@ exports.createShare = (req,res)=>{
                 .then((data)=>{
                     // cập nhật bài share vào tk của user vừa share bài viết 
                     // ko sử dụng được userObj dưới này vì userObj rỗng mới thỏa đk là bài viết chưa được share ==> rỗng => ko có data
-                    account.findByIdAndUpdate(userId, {$push:{post:{rootPostId: postInfo._id, sharePostId:data._id}}},  {new: true})
+                    account.findByIdAndUpdate(userId, {$push:{post:{rootPostId: postInfo._id, sharePostId:data._id}}},  {new: true}) //account của người share bài
                     .then((accountUserShare)=>{
                         newNotification = new notification(
                             {
+                                userId:postInfo.userId,
                                 userIdGuest: userId,
                                 content: `${accountUserShare.fullname} đã chia sẻ bài viết của bạn`
                             }
