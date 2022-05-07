@@ -45,7 +45,6 @@ exports.createPost = async (req, res) => {
 
     // upload image
     let postImages = req.files // file đối với single , files đối với multi
-    console.log(postImages)
     let image = null
     if (postImages) {
         image = []
@@ -89,7 +88,7 @@ exports.updatePost = async (req, res) => {
     }
 
     // image
-    let postImages = req.files // file đối với single , files đối với multi
+    let postImages = req.files
     let image = null
     if (postImages) {
         image = []
@@ -120,14 +119,22 @@ exports.updatePost = async (req, res) => {
 exports.deletePost = (req, res) => {
     let postID = req.params.postID
     let userId = req.userId
+    // delete root post
     PostModel.findOneAndRemove({ _id: postID, userId: userId })
         .then(data => {
-            // AccountModel.updateMany({ }
-            //                         , { $pull: { post: { rootPostId: postID }, post: { sharePostId: postID } } }
-            //                         )
-            AccountModel.findByIdAndUpdate(userId, { $pull: { post: { rootPostId: postID } } })
+            // delete share post
+            PostModel.remove({ rootPost: postID})
                 .then(() => {
-                    return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data })
+                    // delete rootPost in account
+                    AccountModel.findByIdAndUpdate(userId, { $pull: { post: { rootPostId: postID } } })
+                    .then(() => {
+                        // delete sharePost in account
+                        AccountModel.updateMany( {}, { $pull: { post: { sharePostId: postID } } })
+                        .then(() => {
+                            return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data })
+                        })
+                        
+                    })
                 })
         })
         .catch(e => {

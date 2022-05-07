@@ -8,7 +8,7 @@ module.exports = function (linkYoutube) {
     let id = (match && match[7].length == 11) ? match[7] : false;
 
     if (id)
-        return linkVideo = 'https://www.youtube.com/embed/' + id
+        return 'https://www.youtube.com/embed/' + id
     return null
 }
 
