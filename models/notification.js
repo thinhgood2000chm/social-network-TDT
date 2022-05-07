@@ -5,7 +5,7 @@ const notificationSchema = new Schema({
     userId:String,
     userIdGuest: String,
     content: String,
-    deletedFlag: {
+    deletedFlag: { // sử dụng để xóa ( ẩn bài viết cho người dùng) ( soft delete)
         type: Boolean,
         default: false
     }
