@@ -2,9 +2,10 @@ const { BAD_REQUEST, USER_NOT_FOUND, SUCCESS_OK, GET_SOME_ERROR_WHEN_UPDATE, NOT
 
 const account = require('../../models/user')
 const bcrypt = require("bcryptjs")
-
+const fs = require('fs')
 const jwt = require("jsonwebtoken")
-const { json } = require('express/lib/response')
+const {cloudinary} = require("../../library/cloundinary")
+
 const { JWT_SECRET } = process.env
 
 
@@ -56,7 +57,7 @@ exports.login = (req, res) => {
                     res.json({ error: err })
                 }
                 if (result) {
-                    let token = jwt.sign({ id: account._id }, JWT_SECRET, { expiresIn: '1h' })
+                    let token = jwt.sign({ id: account._id }, JWT_SECRET, { expiresIn: '4h' })
                     return res.json({
                         "token": token,
                         "userInfo": account
@@ -84,13 +85,10 @@ exports.oauth2 = (req, res) => {
 }
 
 exports.detail = (req, res) => {
-    var { userId } = req.params
+    var  userId  = req.userId
 
     // kiểm tra id của user bằng cách lấy id sau khi decode của bearer token 
-    // bước này chỉ để tránh query vào db nếu sai thôi
-    if (userId !== req.userId) {
-        return res.json({ "description": USER_NOT_FOUND })
-    }
+
     // chỗ này nếu sửa lại if (userinfo){
     //     for(i=0;i<1000;i++){
 
@@ -115,7 +113,8 @@ exports.detail = (req, res) => {
                 "username": userInfo.username,
                 "biography": userInfo.biography,
                 "className": userInfo.className,
-                "faculty": userInfo.faculty
+                "faculty": userInfo.faculty,
+                "picture":userInfo.picture
 
             })
         }
@@ -127,9 +126,12 @@ exports.detail = (req, res) => {
 exports.updateAccount = (req, res) => {
     // hình ảnh sẽ up sau vif chưa tìm được host lưu trữ
     var { givenName, familyName, username, biography, className, faculty } = req.body
-    //var pciture = req.files;
-    var { userId } = req.params
-    if (userId) {
+    var picture = req.file
+    var userId = req.userId
+
+    cloudinary.uploader.upload(picture.path, {folder:userId})
+    .then((imageAfterUploadInfo)=>{
+        fs.unlinkSync(picture.path)
         data = {
             givenName: givenName,
             familyName: familyName,
@@ -138,7 +140,7 @@ exports.updateAccount = (req, res) => {
             biography: biography,
             className: className,
             faculty: faculty,
-            //picture:picrute
+            picture:imageAfterUploadInfo.url
         }
         // newAccount =await account.findByIdAndUpdate(userId, data,  {new: true}).exec()
         account.findByIdAndUpdate(userId, data, { new: true })
@@ -148,14 +150,16 @@ exports.updateAccount = (req, res) => {
             .catch((err) => {
                 res.json({ "description": GET_SOME_ERROR_WHEN_UPDATE, "error": err })
             })
-    }
+    })
+
+    
 
 }
 
 // dùng async await vì promise và funtion callback hell
 exports.changePassword = async (req, res) => {
     var { newPassword, oldPassword } = req.body
-    var { userId } = req.params
+    var userId = req.userId
     if (oldPassword) {
         currentAccount = await account.findById(userId).exec()
         if (currentAccount) {
@@ -186,7 +190,7 @@ exports.changePassword = async (req, res) => {
 }
 
 exports.profile = (req, res) => {
-    userId = req.params
+    userId = req.userId
     account.findById(userId, (err, profile) => {
         // kiểm tra thêm trong này cho chắc 
         if (err) {
@@ -199,3 +203,14 @@ exports.profile = (req, res) => {
 
     })
 } 
+
+exports.findUser = (req, res)=>{
+    var {name} = req.params
+    account.find({$or:[{fullname:{$regex: name, $options:'i'}}, {username:{$regex: name, $options:'i'}} ]})
+    .then((accountInfos)=>{
+        return res.json(accountInfos)
+    })
+    .catch((err)=>{
+        return res.send(err.name)
+    })
+}

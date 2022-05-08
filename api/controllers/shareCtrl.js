@@ -10,7 +10,7 @@ exports.createShare = (req,res)=>{
     post.findById(postId) // check xem id post có tồn tại hay không
     .then((postInfo)=>{
         // không sử dụng element match thì sẽ ra như bình thường 
-        account.find({_id:userId,"post.rootPostId": postInfo._id }) // check nếu user hiện tại đã chia sẻ bài viết rồi thì ko cho chia sẻ nữa
+        post.find({rootPost:postId, userId:userId}) // check nếu user hiện tại đã chia sẻ bài viết rồi thì ko cho chia sẻ nữa
       
         // {
         //     post:{
@@ -24,8 +24,8 @@ exports.createShare = (req,res)=>{
         //[
         //{ _id: new ObjectId("626aae92a03d2fa0af79460a"), post: [ [Object] ] }
         //]
-         .then((userObj)=>{
-            if (userObj.length != EXIST_SHARE_POST){
+         .then((isSharePost)=>{
+            if (isSharePost.length != EXIST_SHARE_POST){
  
                 return res.status(SUCCESS_OK).json({"description":"Bạn đã chia sẻ bài viết này"})
             }
@@ -40,9 +40,8 @@ exports.createShare = (req,res)=>{
                 })
                 sharePost.save()
                 .then((data)=>{
-                    // cập nhật bài share vào tk của user vừa share bài viết 
-                    // ko sử dụng được userObj dưới này vì userObj rỗng mới thỏa đk là bài viết chưa được share ==> rỗng => ko có data
-                    account.findByIdAndUpdate(userId, {$push:{post:{rootPostId: postInfo._id, sharePostId:data._id}}},  {new: true}) //account của người share bài
+                    // account.findByIdAndUpdate(userId, {$push:{post:{rootPostId: postInfo._id, sharePostId:data._id}}},  {new: true}) //account của người share bài
+                    account.findById(userId)
                     .then((accountUserShare)=>{
                         newNotification = new notification(
                             {
@@ -53,14 +52,15 @@ exports.createShare = (req,res)=>{
             
                         )
                         newNotification.save()
-                        .then((newNotification)=>{
-                            account.findByIdAndUpdate(postInfo.userId, {$push:{notification:newNotification._id}}, {new: true})
-                            .then(()=>{
-                                return res.json({"description": "Bài viết đã được chia sẻ trên trang cá nhân của bạn"})
-                            })     
+                        .then(()=>{
+                            // account.findByIdAndUpdate(postInfo.userId, {$push:{notification:newNotification._id}}, {new: true})
+                            // .then(()=>{
+                            //     return res.json({"description": "Bài viết đã được chia sẻ trên trang cá nhân của bạn"})
+                            // })  
+                            return res.json({"description": "Bài viết đã được chia sẻ trên trang cá nhân của bạn"})   
                         })
                        
-                })
+                    })
                 
                 })
                

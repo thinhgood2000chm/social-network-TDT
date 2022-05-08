@@ -32,14 +32,15 @@ exports.createComment = (req,res)=>{
                 newNotification.save()
                 .then(
                     (newNoti)=>{
+                        return res.json(postInfo.comment[postInfo.comment.length-1])
                         // cập nhật lại dữ liệu thông báo cho user của bài viết để user này nhận được thông báo
-                        account.findByIdAndUpdate(postInfo.userId,  {$push:{notification:newNoti._id}})
-                        .then(()=>{
-                            return res.json(postInfo.comment[postInfo.comment.length-1])
-                        })
-                        .catch(err=>{
-                            return res.send(err.name)
-                        })
+                        // account.findByIdAndUpdate(postInfo.userId,  {$push:{notification:newNoti._id}})
+                        // .then(()=>{
+                        //     return res.json(postInfo.comment[postInfo.comment.length-1])
+                        // })
+                        // .catch(err=>{
+                        //     return res.send(err.name)
+                        // })
                     }
                 )
             }

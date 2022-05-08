@@ -3,7 +3,6 @@ var uploadFile =
     multer({
         dest: './public/upload', fileFilter: (req, file, callback) => {// kiểm tra nếu là ảnh thì cho phép upload vs giá tri mimetype là image
             if (file.mimetype.startsWith('image/')) {
-                console.log("vao 3333")
                 callback(null, true)
             }
             else
