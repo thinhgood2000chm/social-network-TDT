@@ -53,7 +53,6 @@ exports.createPost = async (req, res) => {
         image = []
         await Promise.all(postImages.map(async (file) => {
             const cloud = await cloudinary.uploader.upload(file.path, {folder : userId})
-            cloudinary.uploader.upload()
             image.push(cloud.url)
             // remove temp file in public/upload
             fs.unlinkSync(file.path)
