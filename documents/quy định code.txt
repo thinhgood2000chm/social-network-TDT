@@ -9,3 +9,7 @@ khi làm xong sẽ tiến hành merge code vào develop
 lưu ý:
     ko query ktrong for 
     nếu tạo nhiều dữ liệu 1 lúc thì dùng bulk create 
+
+
+link api gọi đến cloudinary, hướng dẫn các parameter cần thiết trong cloudinary
+https://cloudinary.com/documentation/image_upload_api_reference
