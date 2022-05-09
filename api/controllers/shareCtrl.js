@@ -1,26 +1,35 @@
 const post = require('../../models/post')
 const {BAD_REQUEST, USER_NOT_FOUND, EXIST_SHARE_POST, CASTERROR, SUCCESS_OK} = require('../../library/constant')
 const account = require('../../models/user')
+const notification = require('../../models/notification')
 
 exports.createShare = (req,res)=>{
     var{postId} = req.params
-    var userId = req.userId
+    var userId = req.userId // id của user share bài 
 
     post.findById(postId) // check xem id post có tồn tại hay không
     .then((postInfo)=>{
-        account.find({_id:userId,"post.rootPostId": postInfo._id }, // check nếu user hiện tại đã chia sẻ bài viết rồi thì ko cho chia sẻ nữa
-        {
-            post:{
-                "$elemMatch":{
-                    "rootPostId": postInfo._id
-                }
-            }
-        }, (err, result)=>{
-            if (result.length != EXIST_SHARE_POST){
-                console.log(result)
+        // không sử dụng element match thì sẽ ra như bình thường 
+        post.find({rootPost:postId, userId:userId}) // check nếu user hiện tại đã chia sẻ bài viết rồi thì ko cho chia sẻ nữa
+      
+        // {
+        //     post:{
+        //         "$elemMatch":{
+        //             "rootPostId": postInfo._id  
+        //         }
+        //     }
+        // },
+
+        // khi sử dụng elementmatch
+        //[
+        //{ _id: new ObjectId("626aae92a03d2fa0af79460a"), post: [ [Object] ] }
+        //]
+         .then((isSharePost)=>{
+            if (isSharePost.length != EXIST_SHARE_POST){
+ 
                 return res.status(SUCCESS_OK).json({"description":"Bạn đã chia sẻ bài viết này"})
             }
-            else{        
+            else{     
                 const sharePost = new post({
                     userId: userId,
                     content: postInfo.content,
@@ -31,21 +40,39 @@ exports.createShare = (req,res)=>{
                 })
                 sharePost.save()
                 .then((data)=>{
-                    account.findByIdAndUpdate(userId, {$push:{post:{rootPostId: postInfo._id, sharePostId:data._id}}},  {new: true})
-                    .then((accountUpdate)=>{
-                        res.json({"description": "Bài viết đã được chia sẻ trên trang cá nhân của bạn"})
+                    // account.findByIdAndUpdate(userId, {$push:{post:{rootPostId: postInfo._id, sharePostId:data._id}}},  {new: true}) //account của người share bài
+                    account.findById(userId)
+                    .then((accountUserShare)=>{
+                        newNotification = new notification(
+                            {
+                                userId:postInfo.userId,
+                                userIdGuest: userId,
+                                content: `${accountUserShare.fullname} đã chia sẻ bài viết của bạn`
+                            }
+            
+                        )
+                        newNotification.save()
+                        .then(()=>{
+                            // account.findByIdAndUpdate(postInfo.userId, {$push:{notification:newNotification._id}}, {new: true})
+                            // .then(()=>{
+                            //     return res.json({"description": "Bài viết đã được chia sẻ trên trang cá nhân của bạn"})
+                            // })  
+                            return res.json({"description": "Bài viết đã được chia sẻ trên trang cá nhân của bạn"})   
+                        })
+                       
                     })
+                
                 })
-                     
+               
                 .catch((err)=>{
-                    return err.name
-                })
+                    return res.send(err.name)
+                })  
             }
     
         })
 
     })
     .catch(err=>{
-        return err.name
+        return res.send(err.name)
     })
 }
