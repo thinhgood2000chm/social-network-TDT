@@ -17,8 +17,6 @@ function checkAuthen(req,res, next){
             }
             req.userId = decode['id']
             next()
-
-
         })
     }
     else {

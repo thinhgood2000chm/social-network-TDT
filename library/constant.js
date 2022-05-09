@@ -16,6 +16,9 @@ const NOTIFICATION_NOT_FOUND = "notification not found"
 const CASTERROR = "CastError"
 const REFERENCEERROR = "ReferenceError"
 
+const REGEXP_ID_YOUTUBE = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
+
+
 const EXIST_SHARE_POST = 0 
 module.exports = {PORT: PORT, BAD_REQUEST: BAD_REQUEST, FORBIDDEN:FORBIDDEN,
     USER_NOT_FOUND:USER_NOT_FOUND, GET_SOME_ERROR_WHEN_UPDATE: GET_SOME_ERROR_WHEN_UPDATE,
