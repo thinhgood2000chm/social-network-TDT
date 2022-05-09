@@ -4,7 +4,7 @@ const {BAD_REQUEST, NOTIFICATION_NOT_FOUND, CASTERROR,} = require('../../library
 
 
 exports.getAllNoti = (req, res) => {
-    notification.find({ userId: req.userId, deletedFlag: false }).sort({ createdAt: -1, }).limit(10)
+    notification.find({ userId: req.userId, deletedFlag: false }).sort({ createdAt: -1, }).skip(skip).limit(10)
         .then((listNoti) => {
             return res.json(listNoti)
         })
