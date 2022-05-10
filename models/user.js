@@ -64,6 +64,6 @@ const accountSchema = new Schema({
     }
 }, { timestamps: true })
 
-const account = mongoose.model("account", accountSchema)
+const account = mongoose.model("account", accountSchema, "account")
 
 module.exports = account

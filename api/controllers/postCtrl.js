@@ -6,15 +6,25 @@ const { cloudinary } = require('../../library/cloundinary');
 const getLinkYoutube = require('../../library/getLinkYoutube')
 
 const PostModel = require('../../models/post')
+
 // const AccountModel = require('../../models/user')
 
 
 exports.getPosts = (req, res) => {
     //TODO: scroll loading
-    PostModel.find().populate('createdBy')
+    //-- chưa test cái này
+    PostModel.find().sort({ createdAt: -1, }).limit(10)
+                .populate('createdBy')
+                .populate({
+                    path : 'comment', 
+                    populate : { path : 'createdBy' },
+                    options: {
+                        limit: 2,
+                        sort: { created: -1},
+                        skip: req.params.pageIndex*2
+                    }
+                })
         .then(posts => {
-            posts = posts.reverse()
-
             return res.status(SUCCESS_OK).json({ data: posts })
         })
         .catch(e => {
@@ -24,10 +34,10 @@ exports.getPosts = (req, res) => {
 
 exports.getPost = (req, res) => {
     let postId = req.params.postID
-    PostModel.findById(postId)
+    PostModel.findById(postId).populate(['createdBy', 'comment'])
         .then(post => {
             if(!post)
-                return res.status(NOT_FOUND).json({ message: POST_NOT_FOUND })
+                return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
             
             return res.status(SUCCESS_OK).json({ data: post })
         })
@@ -112,7 +122,7 @@ exports.updatePost = async (req, res) => {
     PostModel.findOneAndUpdate({ _id: postID, createdBy: userId }, { $set: newData })
         .then((post) => {
             if (!post)
-                return res.status(NOT_FOUND).json({ message: POST_NOT_FOUND })
+                return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
             return res.status(SUCCESS_OK).json({ message: 'Cập nhật thành công!', data: post })
         })
         .catch(e => {
@@ -144,7 +154,7 @@ exports.deletePost = (req, res) => {
         // })
         .then(data => {
             if (!data)
-                return res.status(NOT_FOUND).json({ message: POST_NOT_FOUND })
+                return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
 
             // delete share post
             PostModel.deleteMany({ rootPost: postID})
