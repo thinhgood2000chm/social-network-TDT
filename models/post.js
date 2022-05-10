@@ -28,11 +28,15 @@ const postSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'account'
     }],
+    comment: [{
+        type: Schema.Types.ObjectId,
+        ref: 'comment'
+    }],
     rootPost: {
         type: String,
         default: null
     },
 }, { timestamps: true })
-const post = mongoose.model("post", postSchema)
+const post = mongoose.model("post", postSchema, "post")
 
 module.exports = post
