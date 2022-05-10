@@ -31,7 +31,7 @@ exports.createShare = (req,res)=>{
             }
             else{     
                 const sharePost = new post({
-                    userId: userId,
+                    createdBy: userId,
                     content: postInfo.content,
                     image: postInfo.image,
                     video: postInfo.video,

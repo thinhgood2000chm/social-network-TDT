@@ -3,8 +3,8 @@ const post = require('../../models/post')
 const account = require('../../models/user')
 const notification = require('../../models/notification')
 const comment = require('../../models/comment')
-const router = require('../routers/commentRoute')
-const { create } = require('../../models/post')
+
+const mongoose = require('mongoose');
 
 
 exports.createComment = (req,res)=>{
@@ -15,12 +15,12 @@ exports.createComment = (req,res)=>{
     .then((postInfo)=>{
         let newComment = new comment({
             postId: postId,
-            userIdComment: userIdComment,
+            createdBy: userIdComment,
             content: content
         })
         newComment.save()
         .then(()=>{
-            if (userIdComment !== postInfo.userId){
+            if (userIdComment !== postInfo.createdBy){
                 account.findById(userIdComment).then((userinfo)=>{
                     newNotification = new notification(
                     {
@@ -69,18 +69,19 @@ exports.createComment = (req,res)=>{
 
 exports.deleteComment = (req,res)=>{
     var{postId, commentId} = req.params
-    post.find({_id:postId, 'comment._id': commentId}, {comment:{
-        "$elemMatch":{
-            "_id": commentId
-        }
-    }})
-    .then((postInfo)=>{
+    console.log("da vao1", postId, commentId)
+    comment.findOne({_id: commentId, postId: postId}).populate("createdBy")
+    .then((commentInfo)=>{
         // kiểm tra xem đây có phải comment của người đang thực hiện thao tác xóa hay không 
-        commentInfo = postInfo[0].comment[0]
-        if(req.userId === commentInfo.userIdComment){
-            post.findByIdAndUpdate(postId, {$pull:{comment:{_id:commentId}}}).then(()=>{
-                return res.sendStatus(SUCCESS_OK)
-            })
+        if(req.userId ===  commentInfo.createdBy._id.toString()){
+            console.log("da vao")
+            comment.findByIdAndDelete(commentId)
+            .then(
+                ()=>{
+                    return res.send(SUCCESS_OK)
+                }
+            )
+         
         }
         // phải dùng else, ko dùng giống python thì sẽ dính lỗi bất đồng bộ
         else{
@@ -105,15 +106,12 @@ exports.listComment = (req,res)=>{
     var {start} = req.query
     console.log(start)
     skip = Number(start)*LIMIT_PAGING
-    post.findById(postId)
-    .then(
-        (postInfo)=>{
-            comment.find({postId:postId}).sort({ createdAt: 1 }).skip(skip).limit(LIMIT_PAGING)
-            .then(commentsInfo=>{
-                return res.json(commentsInfo)
-            })
 
+    comment.find({postId:postId}).sort({ createdAt: 1 }).skip(skip).limit(LIMIT_PAGING).populate("createdBy")
+    .then(commentsInfo=>{
+        return res.json(commentsInfo)
     })
+
     .catch(err=>{
         if(err.name == CASTERROR){
             return res.status(BAD_REQUEST).json({"description": POST_NOT_FOUND})
