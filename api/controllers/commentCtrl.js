@@ -14,7 +14,7 @@ exports.createComment = (req,res)=>{
         dataUpdate = {
             userIdComment:userIdComment, 
             imageUserComment: userinfo.picture, 
-            nameUserComment:userinfo.fullname, 
+            nameUserComment: userinfo.fullname, 
             content:content
         }
         post.findByIdAndUpdate(postId,{$push:{comment: dataUpdate}}, {new:true})
