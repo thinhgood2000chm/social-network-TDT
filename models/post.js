@@ -33,8 +33,8 @@ const postSchema = new Schema({
         ref: 'comment'
     }],
     rootPost: {
-        type: String,
-        default: null
+        type: Schema.Types.ObjectId,
+        ref: 'post'
     },
 }, { timestamps: true })
 const post = mongoose.model("post", postSchema, "post")
