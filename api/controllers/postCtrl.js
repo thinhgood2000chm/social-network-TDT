@@ -11,7 +11,7 @@ const PostModel = require('../../models/post')
 
 exports.getPosts = (req, res) => {
     //TODO: scroll loading
-    PostModel.find()
+    PostModel.find().populate('createdBy')
         .then(posts => {
             posts = posts.reverse()
 
@@ -61,7 +61,7 @@ exports.createPost = async (req, res) => {
 
     // save
     let newPost = new PostModel({
-        userId: userId,
+        createdBy: userId,
         content: postContent,
         image: image,
         video: linkVideo
@@ -109,7 +109,7 @@ exports.updatePost = async (req, res) => {
         video: linkVideo
     }
 
-    PostModel.findOneAndUpdate({ _id: postID, userId: userId }, { $set: newData })
+    PostModel.findOneAndUpdate({ _id: postID, createdBy: userId }, { $set: newData })
         .then((post) => {
             if (!post)
                 return res.status(NOT_FOUND).json({ message: POST_NOT_FOUND })
