@@ -4,8 +4,9 @@ const account = require('../../models/user')
 const bcrypt = require("bcryptjs")
 const fs = require('fs')
 const jwt = require("jsonwebtoken")
-const {cloudinary} = require("../../library/cloundinary")
+// const {cloudinary} = require("../../library/cloundinary")
 
+// const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { JWT_SECRET } = process.env
 
 
