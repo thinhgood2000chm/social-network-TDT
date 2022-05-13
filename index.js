@@ -1,6 +1,7 @@
 require('dotenv').config() // sử dụng cho file env
 const express = require('express')
 const mongoose = require("mongoose")
+const cors = require('cors') // cho phép truy cập từ domain khác
 
 const { PORT } = require('./library/constant')
 const app = express()
@@ -12,6 +13,7 @@ const likeRoute = require('./api/routers/likeRoute')
 const shareRoute = require('./api/routers/shareRoute') 
 const notificationRoute = require('./api/routers/notificationRoute')
 app.use(express.json())
+app.use(cors({credentials: true, origin: true})); // để client có thể gửi thông tin withCredential: true
 app.use('/api', AccountRouter)
 app.use('/api', PostRoute)
 app.use('/api', CommentRoute)
