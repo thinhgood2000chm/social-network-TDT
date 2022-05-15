@@ -18,11 +18,11 @@ exports.getPosts = (req, res) => {
                 .populate({
                     path : 'comment', 
                     populate : { path : 'createdBy' },
-                    options: {
-                        limit: 2,
-                        sort: { created: -1},
-                        skip: req.params.pageIndex*2
-                    }
+                    // options: {
+                    //     limit: 2,
+                    //     sort: { created: -1},
+                    //     skip: req.params.pageIndex*2
+                    // }
                 })
         .then(posts => {
             return res.status(SUCCESS_OK).json({ data: posts })
@@ -34,7 +34,7 @@ exports.getPosts = (req, res) => {
 
 exports.getPost = (req, res) => {
     let postId = req.params.postID
-    PostModel.findById(postId).populate(['createdBy', 'comment'])
+    PostModel.findById(postId).populate(['createdBy', 'rootPost', 'comment'])
         .then(post => {
             if(!post)
                 return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
