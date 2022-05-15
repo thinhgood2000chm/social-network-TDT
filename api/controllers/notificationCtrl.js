@@ -1,9 +1,13 @@
 const req = require("express/lib/request")
 const notification = require("../../models/notification")
-const {BAD_REQUEST, NOTIFICATION_NOT_FOUND, CASTERROR,} = require('../../library/constant')
+const {BAD_REQUEST, NOTIFICATION_NOT_FOUND, CASTERROR,LIMIT_PAGING} = require('../../library/constant')
 
 
 exports.getAllNoti = (req, res) => {
+    var {start} = req.query
+    console.log(start)
+    skip = Number(start)*LIMIT_PAGING
+
     notification.find({ userId: req.userId, deletedFlag: false }).sort({ createdAt: -1, }).skip(skip).limit(10)
         .then((listNoti) => {
             return res.json(listNoti)

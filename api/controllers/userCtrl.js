@@ -45,6 +45,7 @@ exports.register = (req, res) => {
 
 exports.login = (req, res) => {
     var { username, password } = req.body
+    console.log(username)
     if (!username) {
         return res.status(BAD_REQUEST).json({ "description": "thiếu username" })
     }
@@ -59,6 +60,7 @@ exports.login = (req, res) => {
                 }
                 if (result) {
                     let token = jwt.sign({ id: account._id }, JWT_SECRET, { expiresIn: '4h' })
+                    console.log(token)
                     return res.json({
                         "token": token,
                         "userInfo": account

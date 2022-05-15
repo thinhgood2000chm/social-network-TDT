@@ -1,4 +1,4 @@
-const { USER_NOT_FOUND, SUCCESS_OK, CASTERROR, FRIEND_REQUEST_NOT_FOUND } = require('../../library/constant')
+const { USER_NOT_FOUND, SUCCESS_OK, CASTERROR, FRIEND_REQUEST_NOT_FOUND, LIMIT_PAGING, BAD_REQUEST} = require('../../library/constant')
 const { mapReduce } = require('../../models/friendRequest')
 const friendRequest = require('../../models/friendRequest')
 const account = require('../../models/user')
@@ -86,4 +86,35 @@ exports.acceptOrDelete = (req,res)=>{
            return res.send(err.name)
        }
     })
+}
+
+
+exports.listAll = (req,res)=>{
+    userId = req.userId
+    var {start} = req.query
+
+    skip = Number(start)*LIMIT_PAGING
+    account.findById(userId).lean().populate({
+        path:"friends",
+        options:{
+            limit:10,
+            sort:{createdAt:-1},
+            skip: skip
+        },
+        select:{"_id":1, "picture":1, "fullname":1}
+    })
+    .then(userInfo=>{
+        console.log(userInfo)
+        return res.json(userInfo.friends)
+    })
+    .catch((err)=>{
+        if(err.name == CASTERROR){
+            return res.status(BAD_REQUEST).json({"description": USER_NOT_FOUND})
+
+       }
+       else{
+           return res.send(err.name)
+       }
+    })
+
 }
