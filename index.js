@@ -12,6 +12,8 @@ const CommentRoute = require('./api/routers/commentRoute')
 const likeRoute = require('./api/routers/likeRoute')
 const shareRoute = require('./api/routers/shareRoute') 
 const notificationRoute = require('./api/routers/notificationRoute')
+const friendRequest = require('./api/routers/friendRequestRoute') 
+
 app.use(express.json())
 app.use(cors({credentials: true, origin: true})); // để client có thể gửi thông tin withCredential: true
 app.use('/api', AccountRouter)
@@ -20,6 +22,7 @@ app.use('/api', CommentRoute)
 app.use('/api', likeRoute )
 app.use('/api', shareRoute)
 app.use('/api', notificationRoute)
+app.use('/api', friendRequest)
 // mongodb://localhost:27017/dacntt2 sẽ lỗi "connect ECONNREFUSED ::1:27017"
 mongoose.connect("mongodb://0.0.0.0:27017/dacntt2",
   {

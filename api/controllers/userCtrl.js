@@ -4,8 +4,9 @@ const account = require('../../models/user')
 const bcrypt = require("bcryptjs")
 const fs = require('fs')
 const jwt = require("jsonwebtoken")
-const {cloudinary} = require("../../library/cloundinary")
+// const {cloudinary} = require("../../library/cloundinary")
 
+// const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { JWT_SECRET } = process.env
 
 
@@ -44,6 +45,7 @@ exports.register = (req, res) => {
 
 exports.login = (req, res) => {
     var { username, password } = req.body
+    console.log(username)
     if (!username) {
         return res.status(BAD_REQUEST).json({ "description": "thiếu username" })
     }
@@ -58,6 +60,7 @@ exports.login = (req, res) => {
                 }
                 if (result) {
                     let token = jwt.sign({ id: account._id }, JWT_SECRET, { expiresIn: '4h' })
+                    console.log(token)
                     return res.json({
                         "token": token,
                         "userInfo": account

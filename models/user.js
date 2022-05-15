@@ -52,7 +52,10 @@ const accountSchema = new Schema({
     //         default: null
     //     },
     // }],
-    friends: [this], // this schema
+    friends: [{
+        type: String,
+        ref: 'account'
+    }], // this schema
     // notification: { // lưu lai id thông báo 
     //     type: [String],
     //     
