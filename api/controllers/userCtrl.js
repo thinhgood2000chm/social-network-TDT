@@ -4,11 +4,13 @@ const account = require('../../models/user')
 const bcrypt = require("bcryptjs")
 const fs = require('fs')
 const jwt = require("jsonwebtoken")
-// const {cloudinary} = require("../../library/cloundinary")
+const {cloudinary} = require("../../library/cloundinary")
 
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const {OAuth2Client} = require("google-auth-library")
+const { response } = require('express')
 const { JWT_SECRET } = process.env
-
+const CLIENT_ID='100847206415-rbdoqmgsbdvlik3s3nmukildi3mbpivg.apps.googleusercontent.com'
+const client = new OAuth2Client(CLIENT_ID)
 
 exports.register = (req, res) => {
     var { givenName, familyName, username, password } = req.body;
@@ -79,11 +81,32 @@ exports.login = (req, res) => {
 }
 
 exports.oauth2 = (req, res) => {
-    const headerAuthen = req.headers['authorization']
-    const bearerToken = headerAuthen.split(' ')[1]
-    console.log(bearerToken)
-    var user = jwt.decode(bearerToken, JWT_SECRET)
-    console.log(user)
+    var {tokenId} = req.body
+    client.verifyIdToken({
+        idToken: tokenId, 
+        audience: CLIENT_ID
+    })
+    .then((reponse)=>{
+        console.log(reponse.payload)
+        email = response.payload.email
+        if(!email.includes("@student.tdtu.edu.vn")){
+            return res.json({
+                "error":"Login fail",
+                "description":"Chỉ có thể sử dụng email có đuôi @student.tdtu.edu.vn để đăng nhập="
+            })
+        } 
+        else{
+            account.find({email: email})
+            .then((accountInfo)=>{
+                if(!accountInfo){
+                    // thêm user mới 
+                }
+                else{
+                    // trả về key của jwt
+                }
+            })
+        }
+    })
     return res.send("haha")
 }
 

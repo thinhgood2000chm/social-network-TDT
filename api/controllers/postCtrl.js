@@ -57,7 +57,7 @@ exports.createPost = async (req, res) => {
     }
 
     // upload image
-    let postImages = req.files // file đối với single , files đối với multi
+    let postImages = req.files
     let image = null
     if (postImages) {
         image = []

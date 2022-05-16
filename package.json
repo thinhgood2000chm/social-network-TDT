@@ -18,6 +18,7 @@
     "express": "^4.17.3",
     "express-rate-limit": "^6.4.0",
     "fs": "^0.0.1-security",
+    "google-auth-library": "^8.0.2",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.5.0",
     "mongoose": "^6.3.0",
