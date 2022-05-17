@@ -47,7 +47,6 @@ exports.register = (req, res) => {
 
 exports.login = (req, res) => {
     var { username, password } = req.body
-    console.log(username)
     if (!username) {
         return res.status(BAD_REQUEST).json({ "description": "thiếu username" })
     }
@@ -86,28 +85,49 @@ exports.oauth2 = (req, res) => {
         idToken: tokenId, 
         audience: CLIENT_ID
     })
-    .then((reponse)=>{
-        console.log(reponse.payload)
+    .then((response)=>{
         email = response.payload.email
         if(!email.includes("@student.tdtu.edu.vn")){
-            return res.json({
+            return res.status(BAD_REQUEST).json({
                 "error":"Login fail",
-                "description":"Chỉ có thể sử dụng email có đuôi @student.tdtu.edu.vn để đăng nhập="
+                "description":"Chỉ có thể sử dụng email có đuôi @student.tdtu.edu.vn để đăng nhập"
             })
         } 
         else{
-            account.find({email: email})
+            account.findOne({username: email})
             .then((accountInfo)=>{
                 if(!accountInfo){
-                    // thêm user mới 
+                    let newAccount = new account({
+                        fullname: response.payload.name,
+                        picture:  response.payload.picture,
+                        givenName:  response.payload.given_name,
+                        familyName:  response.payload.family_name,
+                        username:  response.payload.email,
+                    })
+                    newAccount.save()
+                    .then(newAccount=>{
+                        console.log(newAccount)
+                        let token = jwt.sign({ id: newAccount._id }, JWT_SECRET, { expiresIn: '4h' })
+                        return res.json({
+                            "token": token,
+                            "userInfo": newAccount
+                        })
+                    })
                 }
                 else{
-                    // trả về key của jwt
+                    let token = jwt.sign({ id: accountInfo._id }, JWT_SECRET, { expiresIn: '4h' })
+                    return res.json({
+                        "token": token,
+                        "userInfo": accountInfo
+                    })
                 }
+            })
+            .catch(err=>{
+                return res.send(err)
             })
         }
     })
-    return res.send("haha")
+
 }
 
 exports.detail = (req, res) => {
