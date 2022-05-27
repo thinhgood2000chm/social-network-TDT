@@ -14,6 +14,10 @@ const accountSchema = new Schema({
         type: String,
         default: null
     },
+    backgroundPicture: {
+        type: String,
+        default: null
+    },
     givenName: {
         type: String,
         default: null
@@ -64,7 +68,24 @@ const accountSchema = new Schema({
     password: {
         type: String,
         required: false,
+    },
+    birthday:{
+        type: String,
+        required: false,
+        default:null,
+    },
+    phone:{
+        type: String,
+        required: false,
+        default:null,
+    },
+    gender:{
+        type: String,
+        required: false,
+        default:null,
     }
+
+    
 }, { timestamps: true })
 
 const account = mongoose.model("account", accountSchema, "account")
