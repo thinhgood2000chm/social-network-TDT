@@ -173,7 +173,7 @@ exports.updateAccount = (req, res) => {
     // hình ảnh sẽ up sau vif chưa tìm được host lưu trữ
     var { givenName, familyName, username, biography, className, faculty } = req.body
     var picture = req.file
-    var userId = req.userId
+    var {userId} = req.params
 
     cloudinary.uploader.upload(picture.path, {folder:userId})
     .then((imageAfterUploadInfo)=>{
@@ -236,7 +236,7 @@ exports.changePassword = async (req, res) => {
 }
 
 exports.profile = (req, res) => {
-    userId = req.userId
+    const {userId} = req.params
     account.findById(userId, (err, profile) => {
         // kiểm tra thêm trong này cho chắc 
         if (err) {
