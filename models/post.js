@@ -28,7 +28,7 @@ const postSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'account'
     }],
-    comment: [{
+    commentPost: [{
         type: Schema.Types.ObjectId,
         ref: 'comment'
     }],

@@ -8,46 +8,57 @@ const mongoose = require('mongoose');
 
 
 exports.createComment = (req,res)=>{
-    var {postId} = req.params
+    const {postId} = req.params
     var {content} = req.body
-    var userIdComment = req.userId
+    const userIdComment = req.userId
     post.findById(postId)
     .then((postInfo)=>{
+        console.log(postInfo)
         let newComment = new comment({
             postId: postId,
             createdBy: userIdComment,
             content: content
         })
         newComment.save()
-        .then(()=>{
-            if (userIdComment !== postInfo.createdBy){
-                account.findById(userIdComment).then((userinfo)=>{
-                    newNotification = new notification(
-                    {
-                        userId: postInfo.userId,
-                        userIdGuest: userIdComment,
-                        content: `${userinfo.fullname} đã bình luận bài viết của bạn`
+        .then((newComment)=>{
+            post.findByIdAndUpdate(postId, {$push:{commentPost:newComment._id}}, {new: true})
+            .then((postInfo)=>{
+                console.log(postInfo)
+                if (userIdComment !== postInfo.createdBy){
+                    account.findById(userIdComment).then((userinfo)=>{
+                        newNotification = new notification(
+                        {
+                            userId: postInfo.userId,
+                            userIdGuest: userIdComment,
+                            content: `${userinfo.fullname} đã bình luận bài viết của bạn`
+                        })
+                        newNotification.save()
+                        .then(
+                            (newNoti)=>{
+                                post.findByIdAndUpdate(postId, {$push:{commentPost:userIdComment}}, {new: true})
+                                .then(()=>{
+                                    console.log(newNoti)
+                                    return res.json(newComment)
+                                })
+                   
+                        })
+                  
+                            // cập nhật lại dữ liệu thông báo cho user của bài viết để user này nhận được thông báo
+                            // account.findByIdAndUpdate(postInfo.userId,  {$push:{notification:newNoti._id}})
+                            // .then(()=>{
+                            //     return res.json(postInfo.comment[postInfo.comment.length-1])
+                            // })
+                            // .catch(err=>{
+                            //     return res.send(err.name)
+                            // })
                     })
-                    newNotification.save()
-                    .then(
-                        (newNoti)=>{
-                            console.log(newNoti)
-                            return res.json(newComment)
-                    })
-              
-                        // cập nhật lại dữ liệu thông báo cho user của bài viết để user này nhận được thông báo
-                        // account.findByIdAndUpdate(postInfo.userId,  {$push:{notification:newNoti._id}})
-                        // .then(()=>{
-                        //     return res.json(postInfo.comment[postInfo.comment.length-1])
-                        // })
-                        // .catch(err=>{
-                        //     return res.send(err.name)
-                        // })
-                })
-            }
-            else{
-                return res.json(newComment)
-            }
+                }
+                else{
+                    return res.json(newComment)
+                }
+            })
+
+        
 
 
         })
@@ -104,11 +115,12 @@ exports.deleteComment = (req,res)=>{
 exports.listComment = (req,res)=>{
     var {postId} = req.params
     var {start} = req.query
-    console.log(start)
+    console.log(start, postId)
     skip = Number(start)*LIMIT_PAGING
 
     comment.find({postId:postId}).sort({ createdAt: 1 }).skip(skip).limit(LIMIT_PAGING).populate("createdBy")
     .then(commentsInfo=>{
+        console.log(commentsInfo)
         return res.json(commentsInfo)
     })
 

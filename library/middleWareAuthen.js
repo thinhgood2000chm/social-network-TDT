@@ -4,12 +4,14 @@ const {UNAUTHORIZED, FORBIDDEN, BAD_REQUEST} = require('./constant')
 
 
 function checkAuthen(req,res, next){
+    console.log("vao back end")
     const headerAuthen = req.headers['authorization']
+    console.log(headerAuthen) 
     if (headerAuthen == undefined){
         return res.sendStatus(FORBIDDEN)
     }
     const bearerToken = headerAuthen.split(' ')[1]
-    // console.log(bearerToken)
+    console.log(bearerToken)
     if (bearerToken){
         jwt.verify(bearerToken, JWT_SECRET,(err, decode)=>{
             if(err){

@@ -5,14 +5,14 @@ const notification = require('../../models/notification')
 exports.likePost = (req,res)=>{
     var {postId} = req.params
     var userIdLike = req.userId
-
+    console.log("da vao ")
     account.findById(userIdLike)
     .then((userLikeInfo)=>{
         
-        post.findOne({_id:postId, like: userIdLike})
+        post.findOne({_id:postId, likedBy: userIdLike})
         .then((data)=>{
             if(data == null){
-                post.findByIdAndUpdate(postId, {$push:{like:userIdLike}}, {new: true})
+                post.findByIdAndUpdate(postId, {$push:{likedBy:userIdLike}}, {new: true})
                 .then((postInfo)=>{
                     // nếu người like ko phải người tạo ra bài viết 
                     if(userIdLike !==postInfo.userId){
@@ -35,7 +35,7 @@ exports.likePost = (req,res)=>{
                                 // .catch(err=>{
                                 //     return res.send(err.name)
                                 // })
-                                return  res.json({"status":"like", "length":postInfo.like.length})
+                                return  res.json({"status":"like", "length":postInfo.likedBy.length})
                             }
                           
                         )
@@ -45,7 +45,7 @@ exports.likePost = (req,res)=>{
                     }
                     else {
                         // nếu người like là người tạo ra bài viết 
-                        return  res.json({"status":"like", "length":postInfo.like.length})
+                        return  res.json({"status":"like", "length":postInfo.likedBy.length})
                     }
         
         
@@ -55,9 +55,10 @@ exports.likePost = (req,res)=>{
                 })
             }
             else{
-                post.findByIdAndUpdate(postId, {$pull:{like:userIdLike}}, {new: true})
+                post.findByIdAndUpdate(postId, {$pull:{likedBy:userIdLike}}, {new: true})
                 .then((postInfo)=>{
-                    return  res.json({"status":"unlike", "length":postInfo.like.length})
+                    console.log(postInfo)
+                    return  res.json({"status":"unlike", "length":postInfo.likedBy.length})
                 })  
                 .catch(err=>{
                     res.send(err.name)

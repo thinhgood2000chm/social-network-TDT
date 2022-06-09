@@ -170,7 +170,11 @@ exports.detail = (req, res) => {
 }
 
 exports.updateAccount = (req, res) => {
+    // console.log("da vao ", req.body, req.file)
     // hình ảnh sẽ up sau vif chưa tìm được host lưu trữ
+
+
+    // TODO : CHINRH LAIJ NEEUS KO COS ANHR THIF KO CAAPJ NHAATJ ANHR 
     var { givenName, familyName, username, biography, className, faculty } = req.body
     var picture = req.file
     var {userId} = req.params

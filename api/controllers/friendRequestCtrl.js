@@ -90,7 +90,7 @@ exports.acceptOrDelete = (req,res)=>{
 
 
 exports.listAll = (req,res)=>{
-    userId = req.userId
+    var {userId} = req.params
     var {start} = req.query
 
     skip = Number(start)*LIMIT_PAGING

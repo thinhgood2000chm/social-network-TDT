@@ -1,11 +1,12 @@
 const { NOT_FOUND, BAD_REQUEST, USER_NOT_FOUND, SUCCESS_OK, GET_SOME_ERROR_WHEN_UPDATE, NOT_THING_CHANGE, POST_NOT_FOUND } = require('../../library/constant')
-
+const {LIMIT_PAGING} =  require('../../library/constant')
 const { json } = require('express')
 const fs = require('fs');
 const { cloudinary } = require('../../library/cloundinary');
 const getLinkYoutube = require('../../library/getLinkYoutube')
 
-const PostModel = require('../../models/post')
+const PostModel = require('../../models/post');
+const { post } = require('../routers/userRoute');
 
 // const AccountModel = require('../../models/user')
 
@@ -13,19 +14,32 @@ const PostModel = require('../../models/post')
 exports.getPosts = (req, res) => {
     //TODO: scroll loading
     //-- chưa test cái này
-    PostModel.find().sort({ createdAt: -1, }).limit(10)
+    PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING)
                 .populate('createdBy')
+                .populate('likedBy')
+         
                 .populate({
-                    path : 'comment', 
+                    path : 'commentPost',
                     populate : { path : 'createdBy' },
-                    // options: {
-                    //     limit: 2,
-                    //     sort: { created: -1},
-                    //     skip: req.params.pageIndex*2
-                    // }
+                    options: {
+                        limit: 2,
+                        sort: { created: -1},
+                        skip: req.params.pageIndex*2
+                    }
                 })
         .then(posts => {
-            return res.status(SUCCESS_OK).json({ data: posts })
+            var lenComment = {
+                "lenComment":LIMIT_PAGING
+            }
+            for(var i =0; i<posts.length;i++){
+          
+                console.log(lenComment)
+                posts[i]['lenComment'] = 10
+                console.log(posts[i])
+
+            }
+
+            return res.status(SUCCESS_OK).json(posts )
         })
         .catch(e => {
             return res.status(BAD_REQUEST).json({ message: e.message })
@@ -34,12 +48,13 @@ exports.getPosts = (req, res) => {
 
 exports.getPost = (req, res) => {
     let postId = req.params.postID
-    PostModel.findById(postId).populate(['createdBy', 'rootPost', 'comment'])
+    PostModel.findById(postId).populate(['createdBy', 'rootPost', 'commentPost'])
         .then(post => {
             if(!post)
                 return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
             
-            return res.status(SUCCESS_OK).json({ data: post })
+            post.len = 10 
+            return res.status(SUCCESS_OK).json( post )
         })
         .catch(e => {
             return res.status(BAD_REQUEST).json({ message: e.message })
