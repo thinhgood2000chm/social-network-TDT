@@ -123,7 +123,7 @@ exports.listAllFriendRequest = (req,res)=>{
     var {start} = req.query
     var userId = req.userId
     skip = Number(start)*LIMIT_PAGING
-    friendRequest.find({userReceiveId:userId}).populate('userRequest').sort({ createdAt: -1, }).skip(skip).limit(10)
+    friendRequest.find({userReceiveId:userId, status:false}).populate('userRequest').sort({ createdAt: -1, }).skip(skip).limit(10)
     .then(listFriendRequest=>{
         return res.json(listFriendRequest)
     })
