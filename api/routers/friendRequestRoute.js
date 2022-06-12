@@ -6,5 +6,6 @@ const friendCrtl = require("../controllers/friendRequestCtrl")
 
 router.post("/requestFriend/:idUserWantsendRequest",checkAuthen, friendCrtl.createRequestNewFriend)
 router.post("/requestFriend/reply/:idUserInQueueforAccept", checkAuthen, friendCrtl.acceptOrDelete)
-router.get("/requestFriend/:userId", checkAuthen, friendCrtl.listAll)
+router.get("/friend/:userId", checkAuthen, friendCrtl.listAll)
+router.get("/requestFriend/", checkAuthen, friendCrtl.listAllFriendRequest)
 module.exports = router

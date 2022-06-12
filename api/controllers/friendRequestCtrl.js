@@ -6,17 +6,17 @@ const account = require('../../models/user')
 exports.createRequestNewFriend = (req,res)=>{
     var userId = req.userId
     var {idUserWantsendRequest}=req.params // id của user mà người đang đăng nhập hiện tại muôn guiwr lời mời kết bạn
-
     account.findById(idUserWantsendRequest)
     .then((userWantRequestInfo)=>{
         account.findById(userId)
         .then((userSendrequest)=>{
             console.log(userWantRequestInfo.friends)
             if(userWantRequestInfo.friends.includes(userId)){
+               
                 return res.json({"error":"Đã kết bạn đến người này rồi "})
             }
             else{
-                friendRequest.findOne({userId: userId})
+                friendRequest.findOne({userReceiveId: idUserWantsendRequest, userRequest:userId, status:false})
                 .then((isSendRequest)=>{
                     if(isSendRequest){
                         return res.json({'description':'Request đã được gửi đến user này'})
@@ -90,9 +90,9 @@ exports.acceptOrDelete = (req,res)=>{
 
 
 exports.listAll = (req,res)=>{
-    var {userId} = req.params
+    // var {userId} = req.params
     var {start} = req.query
-
+    var userId = req.userId
     skip = Number(start)*LIMIT_PAGING
     account.findById(userId).lean().populate({
         path:"friends",
@@ -115,6 +115,17 @@ exports.listAll = (req,res)=>{
        else{
            return res.send(err.name)
        }
+    })
+
+}
+
+exports.listAllFriendRequest = (req,res)=>{
+    var {start} = req.query
+    var userId = req.userId
+    skip = Number(start)*LIMIT_PAGING
+    friendRequest.find({userReceiveId:userId}).populate('userRequest').sort({ createdAt: -1, }).skip(skip).limit(10)
+    .then(listFriendRequest=>{
+        return res.json(listFriendRequest)
     })
 
 }

@@ -241,6 +241,7 @@ exports.changePassword = async (req, res) => {
 
 exports.profile = (req, res) => {
     const {userId} = req.params
+    const userIdCurrentLogin = req.userId
     account.findById(userId, (err, profile) => {
         // kiểm tra thêm trong này cho chắc 
         if (err) {
@@ -248,6 +249,15 @@ exports.profile = (req, res) => {
             return res.json({ "description": USER_NOT_FOUND })
         }
         else {
+            profile = profile.toJSON()
+            console.log("da vao ", userIdCurrentLogin, userId)
+            if(userIdCurrentLogin === userId){
+                profile.isCurrentUserLoginPage = true
+
+            }
+            else{
+                profile.isCurrentUserLoginPage = false
+            }
             return res.json(profile)
         }
 
