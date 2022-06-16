@@ -250,7 +250,6 @@ exports.profile = (req, res) => {
         }
         else {
             profile = profile.toJSON()
-            console.log("da vao ", userIdCurrentLogin, userId)
             if(userIdCurrentLogin === userId){
                 profile.isCurrentUserLoginPage = true
 

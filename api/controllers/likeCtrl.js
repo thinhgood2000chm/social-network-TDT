@@ -35,7 +35,7 @@ exports.likePost = (req,res)=>{
                                 // .catch(err=>{
                                 //     return res.send(err.name)
                                 // })
-                                return  res.json({"status":"like", "length":postInfo.likedBy.length})
+                                return  res.json({"status":true, "length":postInfo.likedBy.length})
                             }
                           
                         )
@@ -45,7 +45,7 @@ exports.likePost = (req,res)=>{
                     }
                     else {
                         // nếu người like là người tạo ra bài viết 
-                        return  res.json({"status":"like", "length":postInfo.likedBy.length})
+                        return  res.json({"status":true, "length":postInfo.likedBy.length})
                     }
         
         
@@ -58,7 +58,7 @@ exports.likePost = (req,res)=>{
                 post.findByIdAndUpdate(postId, {$pull:{likedBy:userIdLike}}, {new: true})
                 .then((postInfo)=>{
                     console.log(postInfo)
-                    return  res.json({"status":"unlike", "length":postInfo.likedBy.length})
+                    return  res.json({"status":false, "length":postInfo.likedBy.length})
                 })  
                 .catch(err=>{
                     res.send(err.name)

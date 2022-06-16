@@ -50,10 +50,10 @@ exports.createRequestNewFriend = (req,res)=>{
 }
 
 
-exports.acceptOrDelete = (req,res)=>{
+exports.acceptRequest = (req,res)=>{
+    console.log("13123123123123")
     userId = req.userId
     var {idUserInQueueforAccept} = req.params
-    console.log(userId, idUserInQueueforAccept)
     friendRequest.findOneAndUpdate({userReceiveId:userId, userRequest: idUserInQueueforAccept, status: false}, {status: true})
     .then((friendReqInfo)=>{
         console.log("da vao ",friendReqInfo)
@@ -64,8 +64,12 @@ exports.acceptOrDelete = (req,res)=>{
                 // cập nhật bạn bè cho người mà gửi lời mời kết bạn 
                 account.findByIdAndUpdate(idUserInQueueforAccept,{$push:{friends:userId}}, {new:true})
                 .then(()=>{
-                    return res.status(SUCCESS_OK).json({
-                        "description":"2 người đã trở thành bạn"
+                    var {start} = req.body
+                    var userId = req.userId
+                    // skip = Number(start)*LIMIT_PAGING
+                    friendRequest.find({userReceiveId:userId, status:false}).populate('userRequest').sort({ createdAt: -1, }).skip(start).limit(10)
+                    .then(listFriendRequest=>{
+                        return res.json(listFriendRequest)
                     })
                 })
             
@@ -88,6 +92,21 @@ exports.acceptOrDelete = (req,res)=>{
     })
 }
 
+
+exports.deniRequest = (req,res)=>{
+    userId = req.userId
+    var {idUserInQueueforAccept} = req.params
+    friendRequest.findOneAndDelete({userReceiveId:userId, userRequest: idUserInQueueforAccept, status: false})
+    .then((friendReqInfo)=>{
+        return res.status(SUCCESS_OK).json({
+            "description":"Đã xóa lời mời kết bạn"
+        })
+    }
+    )
+    .catch(e=>{
+        res.status(BAD_REQUEST).json({ message: e.message })
+    })
+}
 
 exports.listAll = (req,res)=>{
     // var {userId} = req.params

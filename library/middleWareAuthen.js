@@ -8,10 +8,10 @@ function checkAuthen(req,res, next){
     const headerAuthen = req.headers['authorization']
     console.log(headerAuthen) 
     if (headerAuthen == undefined){
+        console.log("loi user2s")
         return res.sendStatus(FORBIDDEN)
     }
     const bearerToken = headerAuthen.split(' ')[1]
-    console.log(bearerToken)
     if (bearerToken){
         jwt.verify(bearerToken, JWT_SECRET,(err, decode)=>{
             if(err){
