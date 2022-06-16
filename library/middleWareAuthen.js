@@ -4,11 +4,9 @@ const {UNAUTHORIZED, FORBIDDEN, BAD_REQUEST} = require('./constant')
 
 
 function checkAuthen(req,res, next){
-    console.log("vao back end")
     const headerAuthen = req.headers['authorization']
     console.log(headerAuthen) 
     if (headerAuthen == undefined){
-        console.log("loi user2s")
         return res.sendStatus(FORBIDDEN)
     }
     const bearerToken = headerAuthen.split(' ')[1]
