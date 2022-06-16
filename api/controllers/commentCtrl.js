@@ -13,7 +13,6 @@ exports.createComment = (req,res)=>{
     const userIdComment = req.userId
     post.findById(postId)
     .then((postInfo)=>{
-        console.log(postInfo)
         let newComment = new comment({
             postId: postId,
             createdBy: userIdComment,
@@ -25,12 +24,12 @@ exports.createComment = (req,res)=>{
             .then(newComment =>{
                 post.findByIdAndUpdate(postId, {$push:{commentPost:newComment._id}}, {new: true})
                 .then((postInfo)=>{
-                    console.log(postInfo)
+                    console.log("123123123123",postInfo)
                     if (userIdComment !== postInfo.createdBy){
                         account.findById(userIdComment).then((userinfo)=>{
                             newNotification = new notification(
                             {
-                                userId: postInfo.userId,
+                                userId: postInfo.createdBy,
                                 userIdGuest: userIdComment,
                                 content: `${userinfo.fullname} đã bình luận bài viết của bạn`
                             })

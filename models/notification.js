@@ -2,8 +2,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const notificationSchema = new Schema({
     id: String,
-    userId:String,
-    userIdGuest: String,
+    userId:[{ // id của người nhận được thông báo
+        type: String,
+        ref: 'account'
+    }],
+    userIdGuest: [{ // id người mà tương tác để thông báo được gửi về cho người kia
+        type: String,
+        ref: 'account'
+    }],
     content: String,
     deletedFlag: { // sử dụng để xóa ( ẩn bài viết cho người dùng) ( soft delete)
         type: Boolean,

@@ -51,7 +51,6 @@ exports.createRequestNewFriend = (req,res)=>{
 
 
 exports.acceptRequest = (req,res)=>{
-    console.log("13123123123123")
     userId = req.userId
     var {idUserInQueueforAccept} = req.params
     friendRequest.findOneAndUpdate({userReceiveId:userId, userRequest: idUserInQueueforAccept, status: false}, {status: true})
