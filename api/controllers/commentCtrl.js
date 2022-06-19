@@ -38,11 +38,11 @@ exports.createComment = (req,res)=>{
                             newNotification.save()
                             .then(
                                 (newNoti)=>{
-                                    // userOnline.findOne({userId: postInfo.createdBy.toString()})
-                                    // .then(dataUserId=>{
-                                    //     // console.log("6767676767", dataUserId)
-                                    //     // app.IoObject.to(dataUserId.socketId).emit("receive_message",`${userinfo.fullname} đã bình luận bài viết của bạn`)
-                                    // })
+                                    userOnline.findOne({userId: postInfo.createdBy.toString()})
+                                    .then(dataUserId=>{
+                                        // console.log("6767676767", dataUserId)
+                                        app.IoObject.to(dataUserId.socketId).emit("receive_message",`${userinfo.fullname} đã bình luận bài viết của bạn`)
+                                    })
                             
                                     // app.IoObject.sockets.on("createNewNoti", data=>{
                                     //     console.log(data)

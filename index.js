@@ -109,22 +109,15 @@ io.on("connection", (socket) => { ///Handle khi có connect từ client tới
     console.log("123123", idNewUser, socket.id)
   });
 
+// socket.on('createNewNoti', (dataUserId)=>{
+//   console.log("lalalalaal")
+//   userOnline.findOne({userId: dataUserId})
+//   .then(dataUserId=>{
+//     console.log("234234234", dataUserId)
+//     io.to(dataUserId.socketId).emit("receive_message",'đã bình luận bài viết của bạn')
+//   })
 
-// socket.on("createNewNoti", (data=>{
-//   const receiver = getUser(data);
-//   io.to(receiver.socketId).emit("receive_message", "dư lieu use nhan được ");
-//   // console.log("id user trong socket nef ", data)
-//   // socket.join(data)
-// }))
-socket.on('createNewNoti', (dataUserId)=>{
-  console.log("lalalalaal")
-  userOnline.findOne({userId: dataUserId})
-  .then(dataUserId=>{
-    console.log("234234234", dataUserId)
-    io.to(dataUserId.socketId).emit("receive_message",'đã bình luận bài viết của bạn')
-  })
-
-})
+// })
 
 socket.on("disconnect", () => {
   console.log(" da vao díconec", socket.id)
