@@ -1,5 +1,6 @@
 const req = require("express/lib/request")
 const notification = require("../../models/notification")
+const account = require("../../models/user")
 const {BAD_REQUEST, NOTIFICATION_NOT_FOUND, CASTERROR,LIMIT_PAGING} = require('../../library/constant')
 
 
@@ -23,10 +24,23 @@ exports.deleteNoti = (req, res)=>{
     .catch(err=>{
         if(err.name == CASTERROR){
             return res.status(BAD_REQUEST).json({"description": NOTIFICATION_NOT_FOUND})
-
        }
        else{
            return res.send(err.name)
        }
     })
+}
+
+
+exports.changeStatus = (req,res)=>{
+    const userId = req.userId
+    const {notificationId} = req.body
+    account.findById(userId)
+    .then(()=>{
+        notification.findOneAndUpdate({_id:notificationId, userId: userId}, {isChecked: true }, {new:true} )
+        .then(notification=>{
+            return res.send(notification)
+        })
+    })
+
 }

@@ -5,7 +5,6 @@ const {UNAUTHORIZED, FORBIDDEN, BAD_REQUEST} = require('./constant')
 
 function checkAuthen(req,res, next){
     const headerAuthen = req.headers['authorization']
-    console.log(headerAuthen) 
     if (headerAuthen == undefined){
         return res.sendStatus(FORBIDDEN)
     }

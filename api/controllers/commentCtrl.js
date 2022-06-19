@@ -3,8 +3,11 @@ const post = require('../../models/post')
 const account = require('../../models/user')
 const notification = require('../../models/notification')
 const comment = require('../../models/comment')
-
+const userOnline = require('../../models/userOnline')
 const mongoose = require('mongoose');
+const app = require('../../index')
+// const socket = require('../../index')
+// const io = require('../../library/socketio.js').get();
 
 
 exports.createComment = (req,res)=>{
@@ -24,7 +27,6 @@ exports.createComment = (req,res)=>{
             .then(newComment =>{
                 post.findByIdAndUpdate(postId, {$push:{commentPost:newComment._id}}, {new: true})
                 .then((postInfo)=>{
-                    console.log("123123123123",postInfo)
                     if (userIdComment !== postInfo.createdBy){
                         account.findById(userIdComment).then((userinfo)=>{
                             newNotification = new notification(
@@ -36,6 +38,24 @@ exports.createComment = (req,res)=>{
                             newNotification.save()
                             .then(
                                 (newNoti)=>{
+                                    // userOnline.findOne({userId: postInfo.createdBy.toString()})
+                                    // .then(dataUserId=>{
+                                    //     // console.log("6767676767", dataUserId)
+                                    //     // app.IoObject.to(dataUserId.socketId).emit("receive_message",`${userinfo.fullname} đã bình luận bài viết của bạn`)
+                                    // })
+                            
+                                    // app.IoObject.sockets.on("createNewNoti", data=>{
+                                    //     console.log(data)
+                                    // })
+                                    // socket.onConnection.emit("receive_message",`{${userinfo.fullname} đã bình luận bài viết của bạn}`)
+                                    // io.emit("receive_message",`{${userinfo.fullname} đã bình luận bài viết của bạn}`);
+                                    // app.IoSocketObject.join(userinfo._id);
+                                    // app.IoObject.on('connection', (socket)=>{
+                                    //     // socket.join(userinfo._id)
+                                    //     socket.emit("receive_message",`{${userinfo.fullname} đã bình luận bài viết của bạn}`);
+                                    // })
+                                    console.log("vao den day", )
+                                    app.IoObject.to("dARnpbLXEa0MoVYOAAAP").emit("receive_message",`{${userinfo.fullname} đã bình luận bài viết của bạn}`);
                                     post.findByIdAndUpdate(postId, {$push:{commentPost:userIdComment}}, {new: true})
                                     .then(()=>{
                                         return res.json(newComment)
