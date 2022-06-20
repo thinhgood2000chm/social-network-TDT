@@ -40,8 +40,12 @@ exports.createComment = (req,res)=>{
                                 (newNoti)=>{
                                     userOnline.findOne({userId: postInfo.createdBy.toString()})
                                     .then(dataUserId=>{
-                                        // console.log("6767676767", dataUserId)
-                                        app.IoObject.to(dataUserId.socketId).emit("receive_message",`${userinfo.fullname} đã bình luận bài viết của bạn`)
+                                        // nếu ko tìm thấy đồng nghĩa user đó đã off
+                                        if(dataUserId){
+                                            app.IoObject.to(dataUserId.socketId).emit("receive_message",`${userinfo.fullname} đã bình luận bài viết của bạn`)
+                                        }
+                                        
+                                     
                                     })
                             
                                     // app.IoObject.sockets.on("createNewNoti", data=>{
@@ -54,8 +58,6 @@ exports.createComment = (req,res)=>{
                                     //     // socket.join(userinfo._id)
                                     //     socket.emit("receive_message",`{${userinfo.fullname} đã bình luận bài viết của bạn}`);
                                     // })
-                                    console.log("vao den day", )
-                                    app.IoObject.to("dARnpbLXEa0MoVYOAAAP").emit("receive_message",`{${userinfo.fullname} đã bình luận bài viết của bạn}`);
                                     post.findByIdAndUpdate(postId, {$push:{commentPost:userIdComment}}, {new: true})
                                     .then(()=>{
                                         return res.json(newComment)
