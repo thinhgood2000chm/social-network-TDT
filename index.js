@@ -28,7 +28,8 @@ app.use('/api', friendRequest)
 // mongodb://localhost:27017/dacntt2 sẽ lỗi "connect ECONNREFUSED ::1:27017"
 
 
-mongoose.connect("mongodb://0.0.0.0:27017/dacntt2",
+// mongoose.connect("mongodb://0.0.0.0:27017/dacntt2",
+mongoose.connect("mongodb+srv://dacntt2:dacntt2@socialnetworktdt.x9hcb.mongodb.net/?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
