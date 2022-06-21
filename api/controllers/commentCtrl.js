@@ -42,7 +42,8 @@ exports.createComment = (req,res)=>{
                                     .then(dataUserId=>{
                                         // nếu ko tìm thấy đồng nghĩa user đó đã off
                                         if(dataUserId){
-                                            app.IoObject.to(dataUserId.socketId).emit("receive_message",`${userinfo.fullname} đã bình luận bài viết của bạn`)
+                                            console.log("da vao real time")
+                                            app.IoObject.to(dataUserId.socketId).emit("receiveMessageNoti",`${userinfo.fullname} đã bình luận bài viết của bạn`)
                                         }
                                         
                                      
