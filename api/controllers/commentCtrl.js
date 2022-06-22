@@ -114,7 +114,7 @@ exports.deleteComment = (req,res)=>{
             comment.findByIdAndDelete(commentId)
             .then(
                 ()=>{
-                    return res.send(SUCCESS_OK)
+                    return res.sendStatus(SUCCESS_OK)
                 }
             )
          
@@ -139,23 +139,38 @@ exports.deleteComment = (req,res)=>{
 
 exports.listComment = (req,res)=>{
     var {postId} = req.params
-    var {skip} = req.query
+    var {skip, limit} = req.query
 
     // skip = Number(start)*LIMIT_PAGING
+    if(skip){
+        comment.find({postId:postId}).sort({ createdAt: -1 }).skip(skip).limit(LIMIT_PAGING).populate("createdBy")
+        .then(commentsInfo=>{
+            return res.json(commentsInfo)
+        })
 
-    comment.find({postId:postId}).sort({ createdAt: -1 }).skip(skip).limit(LIMIT_PAGING).populate("createdBy")
-    .then(commentsInfo=>{
-        console.log(commentsInfo)
-        return res.json(commentsInfo)
-    })
+        .catch(err=>{
+            if(err.name == CASTERROR){
+                return res.status(BAD_REQUEST).json({"description": POST_NOT_FOUND})
+            }
+            else{
+                return res.send(err.name)
+            }
+        })
+    }
 
-    .catch(err=>{
-        if(err.name == CASTERROR){
-            return res.status(BAD_REQUEST).json({"description": POST_NOT_FOUND})
-        }
-        else{
-            return res.send(err.name)
-        }
-    })
+    else{
+        comment.find({postId:postId}).sort({ createdAt: -1 }).limit(limit).populate("createdBy")
+        .then(commentsInfo=>{
+            return res.json(commentsInfo)
+        })
+        .catch(err=>{
+            if(err.name == CASTERROR){
+                return res.status(BAD_REQUEST).json({"description": POST_NOT_FOUND})
+            }
+            else{
+                return res.send(err.name)
+            }
+        })
+    }
     
 }

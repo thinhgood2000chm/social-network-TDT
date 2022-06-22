@@ -30,8 +30,11 @@ exports.getPosts = (req, res) => {
                     options: {
                         limit: 2,
                         sort: { createdAt: -1},
-                        skip: req.params.pageIndex*2
                     }
+                })
+                .populate({
+                    path:'rootPost',
+                    populate:{path:'createdBy'}
                 })
         .then(posts => {
 

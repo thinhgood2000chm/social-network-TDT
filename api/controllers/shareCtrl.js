@@ -32,9 +32,9 @@ exports.createShare = (req,res)=>{
             else{     
                 const sharePost = new post({
                     createdBy: userId,
-                    content: postInfo.content,
-                    image: postInfo.image,
-                    video: postInfo.video,
+                    content: "",
+                    image: "",
+                    video: "",
                     rootPost: postInfo._id
         
                 })

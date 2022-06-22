@@ -24,10 +24,10 @@ const postSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'account'
     }],
-    sharedBy: [{
-        type: Schema.Types.ObjectId,
-        ref: 'account'
-    }],
+    // sharedBy: [{
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'account'
+    // }],
     commentPost: [{
         type: Schema.Types.ObjectId,
         ref: 'comment'
