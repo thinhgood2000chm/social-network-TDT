@@ -1,5 +1,5 @@
 const { NOT_FOUND, BAD_REQUEST, USER_NOT_FOUND, SUCCESS_OK, GET_SOME_ERROR_WHEN_UPDATE, NOT_THING_CHANGE, POST_NOT_FOUND } = require('../../library/constant')
-const {LIMIT_PAGING} =  require('../../library/constant')
+const { LIMIT_PAGING } = require('../../library/constant')
 const { json } = require('express')
 const fs = require('fs');
 const { cloudinary } = require('../../library/cloundinary');
@@ -14,54 +14,96 @@ const { post } = require('../routers/userRoute');
 exports.getPosts = (req, res) => {
     //TODO: scroll loading
     //-- chưa test cái này
-    const userId = req.userId
+    const userId = req.userID
     PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING)
-                .populate('createdBy')
-                // .populate({path:'likedBy',
-                //     options: {
-                //         limit: 10,
-                //         sort: { created: -1},
-                //         skip: req.params.pageIndex*10
-                //     }
-                // })
-                .populate({
-                    path : 'commentPost',
-                    populate : { path : 'createdBy' },
-                    options: {
-                        limit: 2,
-                        sort: { createdAt: -1},
-                        skip: req.params.pageIndex*2
-                    }
-                })
+        .populate('createdBy')
+        // .populate({path:'likedBy',
+        //     options: {
+        //         limit: 10,
+        //         sort: { created: -1},
+        //         skip: req.params.pageIndex*10
+        //     }
+        // })
+        .populate({
+            path: 'commentPost',
+            populate: { path: 'createdBy' },
+            options: {
+                limit: 2,
+                sort: { createdAt: -1 },
+                skip: req.params.pageIndex * 2
+            }
+        })
         .then(posts => {
 
-            for(var index=0; index<posts.length;index++){
+            for (var index = 0; index < posts.length; index++) {
                 posts[index] = posts[index].toJSON()
-                if(posts[index].likedBy.toString().includes(userId)){
+                if (posts[index].likedBy.toString().includes(userId)) {
                     posts[index].isLikePost = true // isLikePost dùng để kiểm tra xem người hiện tại đang đăng nhập đã like bài viết hay chưa
                     // posts[index].isLikePost
                 }
                 else {
-                    posts[index].isLikePost = false 
+                    posts[index].isLikePost = false
                 }
             }
 
-            return res.status(SUCCESS_OK).json(posts )
+            return res.status(SUCCESS_OK).json(posts)
         })
-        // .catch(e => {
-        //     return res.status(BAD_REQUEST).json({ message: e.message })
+    // .catch(e => {
+    //     return res.status(BAD_REQUEST).json({ message: e.message })
+    // })
+}
+
+exports.getPostsByUserId = (req, res) => {
+    //TODO: scroll loading
+    //-- chưa test cái này
+    const userId = req.params.userID
+    PostModel.find({ createdBy: userId }).sort({ createdAt: -1, }).limit(LIMIT_PAGING)
+        .populate('createdBy')
+        // .populate({path:'likedBy',
+        //     options: {
+        //         limit: 10,
+        //         sort: { created: -1},
+        //         skip: req.params.pageIndex*10
+        //     }
         // })
+        .populate({
+            path: 'commentPost',
+            populate: { path: 'createdBy' },
+            options: {
+                limit: 2,
+                sort: { createdAt: -1 },
+                skip: req.params.pageIndex * 2
+            }
+        })
+        .then(posts => {
+
+            for (var index = 0; index < posts.length; index++) {
+                posts[index] = posts[index].toJSON()
+                if (posts[index].likedBy.toString().includes(userId)) {
+                    posts[index].isLikePost = true // isLikePost dùng để kiểm tra xem người hiện tại đang đăng nhập đã like bài viết hay chưa
+                    // posts[index].isLikePost
+                }
+                else {
+                    posts[index].isLikePost = false
+                }
+            }
+
+            return res.status(SUCCESS_OK).json(posts)
+        })
+    // .catch(e => {
+    //     return res.status(BAD_REQUEST).json({ message: e.message })
+    // })
 }
 
 exports.getPost = (req, res) => {
     let postId = req.params.postID
     PostModel.findById(postId).populate(['createdBy', 'rootPost', 'commentPost'])
         .then(post => {
-            if(!post)
+            if (!post)
                 return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
-            
-            post.len = 10 
-            return res.status(SUCCESS_OK).json( post )
+
+            post.len = 10
+            return res.status(SUCCESS_OK).json(post)
         })
         .catch(e => {
             return res.status(BAD_REQUEST).json({ message: e.message })
@@ -84,7 +126,7 @@ exports.createPost = async (req, res) => {
     if (postImages) {
         image = []
         await Promise.all(postImages.map(async (file) => {
-            const cloud = await cloudinary.uploader.upload(file.path, {folder : userId})
+            const cloud = await cloudinary.uploader.upload(file.path, { folder: userId })
             image.push(cloud.url)
             // remove temp file in public/upload
             fs.unlinkSync(file.path)
@@ -128,7 +170,7 @@ exports.updatePost = async (req, res) => {
     if (postImages) {
         image = []
         await Promise.all(postImages.map(async (file) => {
-            const cloud = await cloudinary.uploader.upload(file.path, {folder : userId})
+            const cloud = await cloudinary.uploader.upload(file.path, { folder: userId })
             image.push(cloud.url)
             fs.unlinkSync(file.path)
         }))
@@ -170,7 +212,7 @@ exports.deletePost = (req, res) => {
         //                 .then(() => {
         //                     return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data })
         //                 })
-                        
+
         //             })
         //         })
         // })
@@ -179,7 +221,7 @@ exports.deletePost = (req, res) => {
                 return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
 
             // delete share post
-            PostModel.deleteMany({ rootPost: postID})
+            PostModel.deleteMany({ rootPost: postID })
                 .then((dataShare) => {
                     return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data, dataShare: dataShare })
                 })
