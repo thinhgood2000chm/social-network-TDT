@@ -251,6 +251,7 @@ exports.profile = (req, res) => {
         }
         else {
             profile = profile.toJSON()
+
             if(userIdCurrentLogin === userId){
                 profile.isCurrentUserLoginPage = true
 
@@ -258,7 +259,29 @@ exports.profile = (req, res) => {
             else{
                 profile.isCurrentUserLoginPage = false
             }
-            return res.json(profile)
+            friendRequest.findOne({$or:[{userRequest: userIdCurrentLogin, userReceiveId: userId}, {userRequest: userId, userReceiveId: userIdCurrentLogin}]})
+            .then(friendRequestInfo=>{
+                console.log("123123123", friendRequestInfo, friendRequestInfo?.status === true)
+                if(friendRequestInfo == null){
+                    profile['friendStatus'] = null
+                }
+                else if (friendRequestInfo.status === true){
+                    profile['friendStatus'] = true
+                }
+                else if (friendRequestInfo.status === false) {
+                    if (friendRequestInfo.userRequest == userIdCurrentLogin)
+                    {
+                        profile['friendStatus'] = false
+                    }
+                    else{
+                        profile['friendStatus'] = 'other'
+                    }
+                }
+                return res.json(profile)
+            })
+       
+
+
         }
 
     })
@@ -278,9 +301,23 @@ exports.findUser = (req, res)=>{
             }
 
             console.log("123123",idUserReceiveRequest_requestInfo)
-            // for(var i = 0 ; i< accountInfos; i ++){
-            //     // if(accountInfos[i]._id)
-            // }
+            for(var i = 0 ; i< accountInfos.length; i ++){
+                accountInfos[i] = accountInfos[i].toJSON()
+                if(accountInfos[i]._id in idUserReceiveRequest_requestInfo){
+                  
+                    // friend status : false: đã gửi lời mời chưa được accept, true là bạn, null chưa là gì cả
+                    var status = idUserReceiveRequest_requestInfo[accountInfos[i]._id.toString()]['status']
+                    if(!status){
+                        accountInfos[i]['friendStatus'] = false
+                    }
+                    else{
+                        accountInfos[i]['friendStatus'] = true
+                    }
+                }
+                else{
+                    accountInfos[i]['friendStatus'] = null
+                }
+            }
             return res.json(accountInfos)
         })
 
