@@ -1,6 +1,7 @@
 const { BAD_REQUEST, USER_NOT_FOUND, SUCCESS_OK, GET_SOME_ERROR_WHEN_UPDATE, NOT_THING_CHANGE } = require('../../library/constant')
 
 const account = require('../../models/user')
+const friendRequest = require('../../models/friendRequest')
 const bcrypt = require("bcryptjs")
 const fs = require('fs')
 const jwt = require("jsonwebtoken")
@@ -267,7 +268,22 @@ exports.findUser = (req, res)=>{
     var {name} = req.params
     account.find({$or:[{fullname:{$regex: name, $options:'i'}}, {username:{$regex: name, $options:'i'}} ]})
     .then((accountInfos)=>{
-        return res.json(accountInfos)
+        friendRequest.find({userRequest: req.userId})
+        .then(requestFriendInfos=>{
+            const idUserReceiveRequest_requestInfo = {}
+
+            for(var i=0; i<requestFriendInfos.length; i++){
+                requestFriendInfoJsons = requestFriendInfos[i].toJSON()
+                idUserReceiveRequest_requestInfo[requestFriendInfoJsons['userReceiveId']] = requestFriendInfoJsons
+            }
+
+            console.log("123123",idUserReceiveRequest_requestInfo)
+            // for(var i = 0 ; i< accountInfos; i ++){
+            //     // if(accountInfos[i]._id)
+            // }
+            return res.json(accountInfos)
+        })
+
     })
     .catch((err)=>{
         return res.send(err.name)
