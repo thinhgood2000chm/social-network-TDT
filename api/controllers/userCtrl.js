@@ -293,33 +293,66 @@ exports.findUser = (req, res)=>{
     var {name} = req.params
     account.find({$or:[{fullname:{$regex: name, $options:'i'}}, {username:{$regex: name, $options:'i'}} ]})
     .then((accountInfos)=>{
-        friendRequest.find({userRequest: req.userId})
+        friendRequest.find({$or:[{userRequest: req.userId}, {userReceiveId: req.userId}]})
         .then(requestFriendInfos=>{
+            console.log("requestFriendInfos", requestFriendInfos)
             const idUserReceiveRequest_requestInfo = {}
-
+            const idUserRequest_requestInfo = {}
             for(var i=0; i<requestFriendInfos.length; i++){
                 requestFriendInfoJsons = requestFriendInfos[i].toJSON()
                 idUserReceiveRequest_requestInfo[requestFriendInfoJsons['userReceiveId']] = requestFriendInfoJsons
+                idUserRequest_requestInfo[requestFriendInfoJsons['userRequest']] =  requestFriendInfoJsons
             }
-
+//{$or:[{userRequest: userIdCurrentLogin, userReceiveId: userId}, {userRequest: userId, userReceiveId: userIdCurrentLogin}]}
             console.log("123123",idUserReceiveRequest_requestInfo)
             for(var i = 0 ; i< accountInfos.length; i ++){
                 accountInfos[i] = accountInfos[i].toJSON()
-                if(accountInfos[i]._id in idUserReceiveRequest_requestInfo){
+
+                // chỗ này tách ra làm 2 để check với 2 mục đích:
+                // - tạo dict với 2 loại 1 là người đang onl là người gửi request, 2 là người đang onl là người được gửi request
+                if(accountInfos[i]._id in idUserReceiveRequest_requestInfo ){
                   
                     // friend status : false: đã gửi lời mời chưa được accept, true là bạn, null chưa là gì cả
                     var status = idUserReceiveRequest_requestInfo[accountInfos[i]._id.toString()]['status']
+
                     if(!status){
-                        accountInfos[i]['friendStatus'] = false
+                        if(idUserReceiveRequest_requestInfo[accountInfos[i]._id.toString()]['userReceiveId'] == req.userId) // nếu người đanh online hiện tại là người nhận được lồi mời thì text sẽ là "xác nhận"
+                        {
+                            accountInfos[i]['friendStatus'] = 'other'
+                        }
+                        else{
+                            accountInfos[i]['friendStatus'] = false
+                        }
+
                     }
                     else{
                         accountInfos[i]['friendStatus'] = true
                     }
                 }
+                else if ( accountInfos[i]._id in idUserRequest_requestInfo ){
+                    var status = idUserRequest_requestInfo[accountInfos[i]._id.toString()]['status']
+
+                    if(!status){
+                        if(idUserRequest_requestInfo[accountInfos[i]._id.toString()]['userReceiveId'] == req.userId) // nếu người đanh online hiện tại là người nhận được lồi mời thì text sẽ là "xác nhận"
+                        {
+                            accountInfos[i]['friendStatus'] = 'other'
+                        }
+                        else{
+                            accountInfos[i]['friendStatus'] = false
+                        }
+
+                    }
+                    else{
+                        accountInfos[i]['friendStatus'] = true
+                    }
+
+  
+                }
                 else{
                     accountInfos[i]['friendStatus'] = null
                 }
             }
+
             return res.json(accountInfos)
         })
 
