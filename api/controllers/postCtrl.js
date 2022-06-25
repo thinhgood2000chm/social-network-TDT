@@ -14,7 +14,7 @@ const { post } = require('../routers/userRoute');
 exports.getPosts = (req, res) => {
     //TODO: scroll loading
     //-- chưa test cái này
-    const userId = req.userId
+    const userId = req.userID
     PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING)
                 .populate('createdBy')
                 // .populate({path:'likedBy',
@@ -144,12 +144,17 @@ exports.createPost = async (req, res) => {
         video: linkVideo
     })
     newPost.save()
-        .then((data) => {
+        .then((newPost) => {
             // AccountModel.findByIdAndUpdate(userId, { $push: { post: { rootPostId: data._id } } }, { new: true })
             //     .then(() => {
             //         return res.status(SUCCESS_OK).json({ data: data })
             //     })
-            return res.status(SUCCESS_OK).json({ data: data })
+
+            newPost.populate('createdBy').then((newPost)=>{
+                console.log(newPost)
+                return res.status(SUCCESS_OK).json(newPost)
+            })
+      
         })
         .catch(e => {
             return res.status(BAD_REQUEST).json({ message: e.message })
