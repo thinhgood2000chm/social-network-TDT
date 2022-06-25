@@ -262,6 +262,8 @@ exports.profile = (req, res) => {
             friendRequest.findOne({$or:[{userRequest: userIdCurrentLogin, userReceiveId: userId}, {userRequest: userId, userReceiveId: userIdCurrentLogin}]})
             .then(friendRequestInfo=>{
                 console.log("123123123", friendRequestInfo, friendRequestInfo?.status === true)
+                 // friend status : false: đã gửi lời mời chưa được accept, true là bạn, null chưa là gì cả, other: chờ xác nhận 
+            
                 if(friendRequestInfo == null){
                     profile['friendStatus'] = null
                 }
@@ -269,7 +271,7 @@ exports.profile = (req, res) => {
                     profile['friendStatus'] = true
                 }
                 else if (friendRequestInfo.status === false) {
-                    if (friendRequestInfo.userRequest == userIdCurrentLogin)
+                    if (friendRequestInfo.userRequest == userIdCurrentLogin) // nếu người đang đăng nhập là người gửi request thì sẽ là đã gửi lời mời 
                     {
                         profile['friendStatus'] = false
                     }

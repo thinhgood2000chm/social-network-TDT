@@ -19,7 +19,7 @@ exports.createRequestNewFriend = (req,res)=>{
                 friendRequest.findOne({userReceiveId: idUserWantsendRequest, userRequest:userId, status:false})
                 .then((isSendRequest)=>{
                     if(isSendRequest){
-                        return res.json({'description':'Request đã được gửi đến user này'})
+                        return res.json({'description':'Request đã được gửi đến user này', "friendStatus": false}) //  "friendStatus": false( đã gửi lời mời ) 
                     }
                     else{
                     let newFriendRequest = new friendRequest({
@@ -66,10 +66,16 @@ exports.acceptRequest = (req,res)=>{
                     var {start} = req.body
                     var userId = req.userId
                     // skip = Number(start)*LIMIT_PAGING
-                    friendRequest.find({userReceiveId:userId, status:false}).populate('userRequest').sort({ createdAt: -1, }).skip(start).limit(10)
-                    .then(listFriendRequest=>{
-                        return res.json(listFriendRequest)
-                    })
+                    if(start){
+                        friendRequest.find({userReceiveId:userId, status:false}).populate('userRequest').sort({ createdAt: -1, }).skip(start).limit(10)
+                        .then(listFriendRequest=>{
+                            return res.json(listFriendRequest)
+                        })
+                    }
+                    else{
+                        return res.json({"description":"đã chấp nhận lời mời", "friendStatus":true})
+                    }
+                 
                 })
             
             })
@@ -98,7 +104,8 @@ exports.deniRequest = (req,res)=>{
     friendRequest.findOneAndDelete({userReceiveId:userId, userRequest: idUserInQueueforAccept, status: false})
     .then((friendReqInfo)=>{
         return res.status(SUCCESS_OK).json({
-            "description":"Đã xóa lời mời kết bạn"
+            "description":"Đã xóa lời mời kết bạn",
+            "friendStatus":null
         })
     }
     )
