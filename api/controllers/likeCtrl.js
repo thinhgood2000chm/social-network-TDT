@@ -1,7 +1,10 @@
 const post = require('../../models/post')
 const account = require('../../models/user')
+const userOnline = require('../../models/userOnline')
 const {BAD_REQUEST, POST_NOT_FOUND, CASTERROR} = require('../../library/constant')
 const notification = require('../../models/notification')
+const app = require('../../index')
+
 exports.likePost = (req,res)=>{
     var {postId} = req.params
     var userIdLike = req.userId
@@ -14,11 +17,13 @@ exports.likePost = (req,res)=>{
             if(data == null){
                 post.findByIdAndUpdate(postId, {$push:{likedBy:userIdLike}}, {new: true})
                 .then((postInfo)=>{
+                    console.log(postInfo)
                     // nếu người like ko phải người tạo ra bài viết 
-                    if(userIdLike !==postInfo.userId){
+                    if(userIdLike !==postInfo.createdBy.toString()){
+                        console.log(" da vao 123123")
                         newNotification = new notification(
                             {
-                                userId:postInfo.userId, // người tạo bài viết ( thể hiện cái noti này là của user nào )
+                                userId: postInfo.createdBy, // người tạo bài viết ( thể hiện cái noti này là của user nào )
                                 userIdGuest: userIdLike,
                                 content: `${userLikeInfo.fullname} đã thích bài viết của bạn`
                             }
@@ -27,6 +32,16 @@ exports.likePost = (req,res)=>{
                         newNotification.save()
                         .then(
                             (newNotification)=>{
+                                userOnline.findOne({userId: postInfo.createdBy.toString()})
+                                .then(dataUserOnline=>{
+                                    // nếu ko tìm thấy đồng nghĩa user đó đã off
+                                    if(dataUserOnline){
+                                        console.log("da vao real time")
+                                        app.IoObject.to(dataUserOnline.socketId).emit("receiveMessageLike",`${userLikeInfo.fullname} đã thích bài viết của bạn`)
+                                    }
+                                    
+                                 
+                                })
                                 // // cập nhật lại cho user của bài viết chuỗi id của thông báo vừa tạo
                                 // account.findByIdAndUpdate(postInfo.userId, {$push:{notification:newNotification._id}})
                                 // .then(()=>{
