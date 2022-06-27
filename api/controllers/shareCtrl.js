@@ -2,6 +2,8 @@ const post = require('../../models/post')
 const {BAD_REQUEST, USER_NOT_FOUND, EXIST_SHARE_POST, CASTERROR, SUCCESS_OK} = require('../../library/constant')
 const account = require('../../models/user')
 const notification = require('../../models/notification')
+const userOnline = require('../../models/userOnline')
+const app = require('../../index')
 
 exports.createShare = (req,res)=>{
     var{postId} = req.params
@@ -26,7 +28,6 @@ exports.createShare = (req,res)=>{
         //]
          .then((isSharePost)=>{
             if (isSharePost.length != EXIST_SHARE_POST){
- 
                 return res.status(SUCCESS_OK).json({"description":"Bạn đã chia sẻ bài viết này"})
             }
             else{     
@@ -35,7 +36,7 @@ exports.createShare = (req,res)=>{
                     content: "",
                     image: "",
                     video: "",
-                    rootPost: postInfo._id
+                    rootPost: postId
         
                 })
                 sharePost.save()
@@ -45,7 +46,7 @@ exports.createShare = (req,res)=>{
                     .then((accountUserShare)=>{
                         newNotification = new notification(
                             {
-                                userId:postInfo.userId,
+                                userId:postInfo.createdBy,
                                 userIdGuest: userId,
                                 content: `${accountUserShare.fullname} đã chia sẻ bài viết của bạn`
                             }
@@ -53,6 +54,16 @@ exports.createShare = (req,res)=>{
                         )
                         newNotification.save()
                         .then(()=>{
+                            userOnline.findOne({userId: postInfo.createdBy.toString()})
+                            .then(dataUserOnline=>{
+                                // nếu ko tìm thấy đồng nghĩa user đó đã off
+                                if(dataUserOnline){
+                                    console.log("da vao real time")
+                                    app.IoObject.to(dataUserOnline.socketId).emit("receiveMessageShare",`${accountUserShare.fullname} đã chia sẻ bài viết của bạn`)
+                                }
+                                
+                             
+                            })
                             // account.findByIdAndUpdate(postInfo.userId, {$push:{notification:newNotification._id}}, {new: true})
                             // .then(()=>{
                             //     return res.json({"description": "Bài viết đã được chia sẻ trên trang cá nhân của bạn"})
