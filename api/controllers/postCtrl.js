@@ -14,7 +14,7 @@ const { post } = require('../routers/userRoute');
 exports.getPosts = (req, res) => {
     //TODO: scroll loading
     //-- chưa test cái này
-    const userId = req.userID
+    const userId = req.userId
     PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING)
                 .populate('createdBy')
                 // .populate({path:'likedBy',

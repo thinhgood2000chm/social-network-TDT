@@ -10,6 +10,9 @@ exports.getAllNoti = (req, res) => {
         .then((listNoti) => {
             return res.json(listNoti)
         })
+        .catch(e=>{
+            res.status(BAD_REQUEST).json({ message: e.message })
+        })
 }
 
 exports.deleteNoti = (req, res)=>{
@@ -35,12 +38,17 @@ exports.deleteNoti = (req, res)=>{
 exports.changeStatus = (req,res)=>{
     const userId = req.userId
     const {notificationId} = req.body
+    console.log(" da vao ")
     account.findById(userId)
     .then(()=>{
-        notification.findOneAndUpdate({_id:notificationId, userId: userId}, {isChecked: true }, {new:true} )
+        notification.findOneAndUpdate({_id:notificationId, userId: userId}, {isChecked: true }, {new:true} ).populate('userId').populate('userIdGuest')
         .then(notification=>{
-            return res.send(notification)
+            return res.json(notification)
         })
+        .catch(e=>{
+            res.status(BAD_REQUEST).json({ message: e.message })
+        })
+
     })
 
 }
