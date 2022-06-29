@@ -15,14 +15,16 @@ exports.getPosts = (req, res) => {
     //TODO: scroll loading
     //-- chưa test cái này
     const userId = req.userID
-    PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING)
+    const page = req.params.page || 0
+    
+    PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip(page)
         .populate('createdBy')
         // .populate({path:'likedBy',
-        //     options: {
-        //         limit: 10,
-        //         sort: { created: -1},
-        //         skip: req.params.pageIndex*10
-        //     }
+            // options: {
+            //     limit: 10,
+            //     sort: { created: -1},
+            //     skip: req.params.pageIndex*10
+            // }
         // })
         .populate({
             path: 'commentPost',
