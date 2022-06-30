@@ -15,9 +15,8 @@ exports.getPosts = (req, res) => {
     //TODO: scroll loading
     //-- chưa test cái này
     const userId = req.userID
-    const page = req.params.page || 0
     
-    PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip(page)
+    PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0)*LIMIT_PAGING)
         .populate('createdBy')
         // .populate({path:'likedBy',
             // options: {
@@ -62,7 +61,7 @@ exports.getPostsByUserId = (req, res) => {
     //TODO: scroll loading
     //-- chưa test cái này
     const userId = req.params.userID
-    PostModel.find({ createdBy: userId }).sort({ createdAt: -1, }).limit(LIMIT_PAGING)
+    PostModel.find({ createdBy: userId }).sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0)*LIMIT_PAGING)
         .populate('createdBy')
         // .populate({path:'likedBy',
         //     options: {
