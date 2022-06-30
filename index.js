@@ -119,7 +119,12 @@ io.on("connection", (socket) => { ///Handle khi có connect từ client tới
 //   })
 
 // })
+socket.on('joinRoom', roomName =>{
 
+  socket.join(roomName)
+  // console.log(socket.rooms)
+  // io.in(roomName).emit("receiveCommentInfo","du lieu comment mơi ")
+})
 socket.on("disconnect", () => {
   console.log(" da vao díconec", socket.id)
   removeUser(socket.id)

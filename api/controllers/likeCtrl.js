@@ -36,7 +36,6 @@ exports.likePost = (req,res)=>{
                                 .then(dataUserOnline=>{
                                     // nếu ko tìm thấy đồng nghĩa user đó đã off
                                     if(dataUserOnline){
-                                        console.log("da vao real time")
                                         app.IoObject.to(dataUserOnline.socketId).emit("receiveMessageLike",`${userLikeInfo.fullname} đã thích bài viết của bạn`)
                                     }
                                     

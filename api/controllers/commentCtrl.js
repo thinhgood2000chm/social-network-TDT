@@ -44,10 +44,15 @@ exports.createComment = (req,res)=>{
                                         if(dataUserId){
                                             console.log("da vao real time")
                                             app.IoObject.to(dataUserId.socketId).emit("receiveMessageNoti",`${userinfo.fullname} đã bình luận bài viết của bạn`)
+
                                         }
                                         
                                      
                                     })
+                                    if(newComment){
+                                        console.log("da vo duoi rôi ne", postInfo._id)
+                                        app.IoObject.in(postInfo._id.toString()).emit("receiveCommentInfo","du lieu comment mơi ")
+                                    }
                             
                                     // app.IoObject.sockets.on("createNewNoti", data=>{
                                     //     console.log(data)
