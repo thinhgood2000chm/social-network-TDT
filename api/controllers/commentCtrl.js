@@ -51,7 +51,7 @@ exports.createComment = (req,res)=>{
                                     })
                                     if(newComment){
                                         console.log("da vo duoi rôi ne", postInfo._id)
-                                        app.IoObject.in(postInfo._id.toString()).emit("receiveCommentInfo","du lieu comment mơi ")
+                                        app.IoObject.in(postInfo._id.toString()).emit("receiveCommentInfo",newComment )
                                     }
                             
                                     // app.IoObject.sockets.on("createNewNoti", data=>{
