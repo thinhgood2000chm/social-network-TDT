@@ -79,6 +79,10 @@ exports.getPostsByUserId = (req, res) => {
                 skip: req.params.pageIndex * 2
             }
         })
+        .populate({
+            path: 'rootPost',
+            populate: { path: 'createdBy' }
+        })
         .then(posts => {
 
             for (var index = 0; index < posts.length; index++) {
