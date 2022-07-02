@@ -15,27 +15,28 @@ exports.getPosts = (req, res) => {
     //TODO: scroll loading
     //-- chưa test cái này
     const userId = req.userId
-    PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING)
-                .populate('createdBy')
-                // .populate({path:'likedBy',
-                //     options: {
-                //         limit: 10,
-                //         sort: { created: -1},
-                //         skip: req.params.pageIndex*10
-                //     }
-                // })
-                .populate({
-                    path : 'commentPost',
-                    populate : { path : 'createdBy' },
-                    options: {
-                        limit: 2,
-                        sort: { createdAt: -1},
-                    }
-                })
-                .populate({
-                    path:'rootPost',
-                    populate:{path:'createdBy'}
-                })
+    
+    PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0)*LIMIT_PAGING)
+        .populate('createdBy')
+        // .populate({path:'likedBy',
+            // options: {
+            //     limit: 10,
+            //     sort: { created: -1},
+            //     skip: req.params.pageIndex*10
+            // }
+        // })
+        .populate({
+            path: 'commentPost',
+            populate: { path: 'createdBy' },
+            options: {
+                limit: 2,
+                sort: { createdAt: -1 },
+            }
+        })
+        .populate({
+            path: 'rootPost',
+            populate: { path: 'createdBy' }
+        })
         .then(posts => {
 
             for (var index = 0; index < posts.length; index++) {
@@ -60,7 +61,7 @@ exports.getPostsByUserId = (req, res) => {
     //TODO: scroll loading
     //-- chưa test cái này
     const userId = req.params.userID
-    PostModel.find({ createdBy: userId }).sort({ createdAt: -1, }).limit(LIMIT_PAGING)
+    PostModel.find({ createdBy: userId }).sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0)*LIMIT_PAGING)
         .populate('createdBy')
         // .populate({path:'likedBy',
         //     options: {
@@ -150,11 +151,10 @@ exports.createPost = async (req, res) => {
             //         return res.status(SUCCESS_OK).json({ data: data })
             //     })
 
-            newPost.populate('createdBy').then((newPost)=>{
-                console.log(newPost)
+            newPost.populate('createdBy').then((newPost) => {
                 return res.status(SUCCESS_OK).json(newPost)
             })
-      
+
         })
         .catch(e => {
             return res.status(BAD_REQUEST).json({ message: e.message })
@@ -191,11 +191,12 @@ exports.updatePost = async (req, res) => {
         video: linkVideo
     }
 
-    PostModel.findOneAndUpdate({ _id: postID, createdBy: userId }, { $set: newData })
+    PostModel.findOneAndUpdate({ _id: postID, createdBy: userId }, { $set: newData }, { new: true })
         .then((post) => {
             if (!post)
                 return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
-            return res.status(SUCCESS_OK).json({ message: 'Cập nhật thành công!', data: post })
+
+            return res.status(SUCCESS_OK).json(post)
         })
         .catch(e => {
             return res.status(BAD_REQUEST).json({ message: e.message })
