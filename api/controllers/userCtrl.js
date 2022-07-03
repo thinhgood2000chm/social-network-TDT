@@ -170,41 +170,97 @@ exports.detail = (req, res) => {
 
 }
 
-exports.updateAccount = (req, res) => {
+exports.updateAccount = async(req, res) => {
     // console.log("da vao ", req.body, req.file)
     // hình ảnh sẽ up sau vif chưa tìm được host lưu trữ
 
 
     // TODO : CHINRH LAIJ NEEUS KO COS ANHR THIF KO CAAPJ NHAATJ ANHR 
-    var { givenName, familyName, username, biography, className, faculty } = req.body
-    var picture = req.file
+    var { givenName, familyName, username, biography, className, faculty, birthday, phone, gender } = req.body
+    var picture = null
+    var backgroundPicture = null
+    if( req.files.image){
+        picture = req.files.image[0]
+    }
+    if( req.files.backgroundPicture){
+        backgroundPicture = req.files.backgroundPicture[0]
+    } 
     var {userId} = req.params
-
-    cloudinary.uploader.upload(picture.path, {folder:userId})
-    .then((imageAfterUploadInfo)=>{
+    console.log(picture)
+    if(picture){
+        var pictureInCloud = await cloudinary.uploader.upload(picture.path, {folder:userId})
         fs.unlinkSync(picture.path)
-        data = {
-            givenName: givenName,
-            familyName: familyName,
-            fullname: `${givenName} ${familyName}`,
-            username: username,
-            biography: biography,
-            className: className,
-            faculty: faculty,
-            picture:imageAfterUploadInfo.url
+        console.log(pictureInCloud)
+        var pictureUrl = pictureInCloud.url
+    }
+    if(backgroundPicture){
+        var backgroundPictureInCloud = await cloudinary.uploader.upload(backgroundPicture.path, {folder:userId})
+        fs.unlinkSync(backgroundPicture.path)
+        console.log(backgroundPictureInCloud)
+        var backgroundPictureUrl = backgroundPictureInCloud.url
+    }
+
+    account.findById(userId)
+    .then((userInfo)=>{
+        if(! givenName){
+            var givenName = userInfo.givenName
         }
-        // newAccount =await account.findByIdAndUpdate(userId, data,  {new: true}).exec()
-        account.findByIdAndUpdate(userId, data, { new: true })
-            .then(user => {
-                return res.json(user)
-            })
-            .catch((err) => {
-                res.json({ "description": GET_SOME_ERROR_WHEN_UPDATE, "error": err })
-            })
-    })
+        if(! familyName){
+            var familyName = userInfo.familyName
+        }
+        if(! username){
+            var username = userInfo.username
+        }
+        if(! biography){
+            var biography = userInfo.biography
+        }
+        if(! className){
+            var className = userInfo.className
+        }
+        if(! faculty){
+            var faculty = userInfo.faculty
+        }
+        if(! birthday){
+            var birthday = userInfo.birthday
+        }
+        if(! phone){
+            var phone = userInfo.phone
+        }
+        if(! gender){
+            var gender = userInfo.gender
+        }
+        if(! picture){
+            var pictureUrl = userInfo.picture
+        }
+        if(! backgroundPicture){
+            var backgroundPictureUrl = userInfo.backgroundPicture
+        }
 
-    
-
+    }
+       
+    )
+    data = {
+        givenName: givenName,
+        familyName: familyName,
+        fullname: `${givenName} ${familyName}`,
+        username: username,
+        biography: biography,
+        className: className,
+        faculty: faculty,
+        birthday:birthday,
+        phone:phone,
+        gender:gender,
+        picture:pictureUrl,
+        backgroundPicture: backgroundPictureUrl
+    }
+    // newAccount =await account.findByIdAndUpdate(userId, data,  {new: true}).exec()
+    account.findByIdAndUpdate(userId, data, { new: true })
+        .then(user => {
+            return res.json(user)
+        })
+        .catch((err) => {
+            res.json({ "description": GET_SOME_ERROR_WHEN_UPDATE, "error": err })
+        })
 }
 
 // dùng async await vì promise và funtion callback hell

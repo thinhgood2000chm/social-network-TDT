@@ -2,10 +2,6 @@ const mongoose = require("mongoose")
 const Schema = mongoose.Schema;
 
 const accountSchema = new Schema({
-    hd: {
-        type: String,
-        default: null
-    },
     fullname: {
         type: String,
         default: null
