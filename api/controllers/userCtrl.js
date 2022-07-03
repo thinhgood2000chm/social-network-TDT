@@ -186,22 +186,31 @@ exports.updateAccount = async(req, res) => {
         backgroundPicture = req.files.backgroundPicture[0]
     } 
     var {userId} = req.params
-    console.log(picture)
+
+    var backgroundPictureCloundId = null
+    var pictureCloundId = null
     if(picture){
         var pictureInCloud = await cloudinary.uploader.upload(picture.path, {folder:userId})
         fs.unlinkSync(picture.path)
-        console.log(pictureInCloud)
         var pictureUrl = pictureInCloud.url
+        console.log(pictureInCloud)
+        pictureCloundId = pictureInCloud.public_id
     }
     if(backgroundPicture){
         var backgroundPictureInCloud = await cloudinary.uploader.upload(backgroundPicture.path, {folder:userId})
         fs.unlinkSync(backgroundPicture.path)
-        console.log(backgroundPictureInCloud)
         var backgroundPictureUrl = backgroundPictureInCloud.url
+        backgroundPictureCloundId = backgroundPictureInCloud.public_id
     }
 
-    account.findById(userId)
-    .then((userInfo)=>{
+    var userInfo = await account.findById(userId)
+    
+        if(backgroundPicture && userInfo.backgroundPictureId){
+            await  cloudinary.uploader.destroy(userInfo.backgroundPictureId)
+        }
+        if(picture && userInfo.pictureId){
+            await  cloudinary.uploader.destroy(userInfo.pictureId)
+        }
         if(! givenName){
             var givenName = userInfo.givenName
         }
@@ -235,10 +244,7 @@ exports.updateAccount = async(req, res) => {
         if(! backgroundPicture){
             var backgroundPictureUrl = userInfo.backgroundPicture
         }
-
-    }
-       
-    )
+    
     data = {
         givenName: givenName,
         familyName: familyName,
@@ -251,7 +257,9 @@ exports.updateAccount = async(req, res) => {
         phone:phone,
         gender:gender,
         picture:pictureUrl,
-        backgroundPicture: backgroundPictureUrl
+        backgroundPicture: backgroundPictureUrl,
+        backgroundPictureId: backgroundPictureCloundId,
+        pictureId:pictureCloundId
     }
     // newAccount =await account.findByIdAndUpdate(userId, data,  {new: true}).exec()
     account.findByIdAndUpdate(userId, data, { new: true })

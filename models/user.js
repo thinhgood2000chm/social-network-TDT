@@ -14,6 +14,15 @@ const accountSchema = new Schema({
         type: String,
         default: null
     },
+    backgroundPictureId: {
+        type: String,
+        default: null
+    },
+    pictureId: {
+        type: String,
+        default: null
+    },
+    
     givenName: {
         type: String,
         default: null
