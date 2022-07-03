@@ -91,7 +91,6 @@ exports.getPostsByUserId = (req, res) => {
                     posts[index].isLikePost = false
                 }
             }
-
             return res.status(SUCCESS_OK).json(posts)
         })
     // .catch(e => {

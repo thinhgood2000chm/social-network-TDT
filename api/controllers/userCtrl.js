@@ -132,7 +132,7 @@ exports.oauth2 = (req, res) => {
 }
 
 exports.detail = (req, res) => {
-    var  userId  = req.userId
+    var userId  = req.userId
 
     // kiểm tra id của user bằng cách lấy id sau khi decode của bearer token 
 
