@@ -2,6 +2,8 @@ require('dotenv').config() // sử dụng cho file env
 const express = require('express')
 const mongoose = require("mongoose")
 const cors = require('cors') // cho phép truy cập từ domain khác
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsDoc = require("swagger-jsdoc");
 
 const { PORT } = require('./library/constant')
 const app = express()
@@ -15,6 +17,25 @@ const notificationRoute = require('./api/routers/notificationRoute')
 const friendRequest = require('./api/routers/friendRequestRoute')
 const { Server } = require("socket.io");
 const userOnline = require('./models/userOnline')
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: "3.0.0",
+    info: {
+      version: "1.0.0",
+      title: "Customer API",
+      description: "Customer API Information",
+      contact: {
+        name: "Amazing Developer"
+      },
+      servers: ["http://localhost:8080"]
+    }
+  },
+  // ['.routes/*.js']
+  apis: ['./api/routers/*.js']
+};
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.json())
 app.use(cors({ credentials: true, origin: true })); // để client có thể gửi thông tin withCredential: true
