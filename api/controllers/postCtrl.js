@@ -126,11 +126,14 @@ exports.createPost = async (req, res) => {
     // upload image
     let postImages = req.files
     let image = null
+    let imageId = null
     if (postImages) {
         image = []
+        imageId = []
         await Promise.all(postImages.map(async (file) => {
             const cloud = await cloudinary.uploader.upload(file.path, { folder: userId })
             image.push(cloud.url)
+            imageId.push(cloud.public_id)
             // remove temp file in public/upload
             fs.unlinkSync(file.path)
         }))
@@ -141,6 +144,7 @@ exports.createPost = async (req, res) => {
         createdBy: userId,
         content: postContent,
         image: image,
+        imageId: imageId,
         video: linkVideo
     })
     newPost.save()
@@ -174,11 +178,14 @@ exports.updatePost = async (req, res) => {
     // image
     let postImages = req.files
     let image = null
+    let imageId = null
     if (postImages) {
         image = []
+        imageId = []
         await Promise.all(postImages.map(async (file) => {
             const cloud = await cloudinary.uploader.upload(file.path, { folder: userId })
             image.push(cloud.url)
+            imageId.push(cloud.public_id)
             fs.unlinkSync(file.path)
         }))
     }
@@ -187,6 +194,7 @@ exports.updatePost = async (req, res) => {
     newData = {
         content: postContent,
         image: image,
+        imageId: imageId,
         video: linkVideo
     }
 
@@ -208,25 +216,12 @@ exports.deletePost = (req, res) => {
     let userId = req.userId
     // delete root post
     PostModel.findOneAndRemove({ _id: postID, userId: userId })
-        // .then(data => {
-        //     // delete share post
-        //     PostModel.remove({ rootPost: postID})
-        //         .then(() => {
-        //             // delete rootPost in account
-        //             AccountModel.findByIdAndUpdate(userId, { $pull: { post: { rootPostId: postID } } })
-        //             .then(() => {
-        //                 // delete sharePost in account
-        //                 AccountModel.updateMany( {}, { $pull: { post: { sharePostId: postID } } })
-        //                 .then(() => {
-        //                     return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data })
-        //                 })
-
-        //             })
-        //         })
-        // })
         .then(data => {
             if (!data)
                 return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
+
+            // delete img in cloud
+            cloudinary.uploader.destroy(data.imageId[0])
 
             // delete share post
             PostModel.deleteMany({ rootPost: postID })
