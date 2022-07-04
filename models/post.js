@@ -16,6 +16,10 @@ const postSchema = new Schema({
         type: [String],
         default: null
     },
+    imageId: {
+        type: [String],
+        default: null
+    },
     video: {
         type: String,
         default: null
