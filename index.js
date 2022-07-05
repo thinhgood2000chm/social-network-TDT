@@ -15,6 +15,7 @@ const likeRoute = require('./api/routers/likeRoute')
 const shareRoute = require('./api/routers/shareRoute')
 const notificationRoute = require('./api/routers/notificationRoute')
 const friendRequest = require('./api/routers/friendRequestRoute')
+const chatRoute = require('./api/routers/chatRoute')
 const { Server } = require("socket.io");
 const userOnline = require('./models/userOnline')
 
@@ -46,6 +47,7 @@ app.use('/api', likeRoute)
 app.use('/api', shareRoute)
 app.use('/api', notificationRoute)
 app.use('/api', friendRequest)
+app.use('/api', chatRoute)
 // mongodb://localhost:27017/dacntt2 sẽ lỗi "connect ECONNREFUSED ::1:27017"
 
 
