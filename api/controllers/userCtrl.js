@@ -152,18 +152,19 @@ exports.detail = (req, res) => {
             return res.json({ "description": USER_NOT_FOUND })
         }
         else {
-            return res.json({
-                "id": userInfo._id,
-                "givenName": userInfo.givenName,
-                "familyName": userInfo.familyName,
-                "fullname": userInfo.fullname,
-                "username": userInfo.username,
-                "biography": userInfo.biography,
-                "className": userInfo.className,
-                "faculty": userInfo.faculty,
-                "picture":userInfo.picture
+            return res.json(userInfo)
+            // return res.json({
+            //     "id": userInfo._id,
+            //     "givenName": userInfo.givenName,
+            //     "familyName": userInfo.familyName,
+            //     "fullname": userInfo.fullname,
+            //     "username": userInfo.username,
+            //     "biography": userInfo.biography,
+            //     "className": userInfo.className,
+            //     "faculty": userInfo.faculty,
+            //     "picture":userInfo.picture
 
-            })
+            // })
         }
 
     })
