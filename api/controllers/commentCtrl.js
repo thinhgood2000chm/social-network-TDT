@@ -110,7 +110,6 @@ exports.createComment = (req,res)=>{
 
 exports.deleteComment = (req,res)=>{
     var{postId, commentId} = req.params
-    console.log("da vao1", postId, commentId)
     comment.findOne({_id: commentId, postId: postId}).populate("createdBy")
     .then((commentInfo)=>{
         // kiểm tra xem đây có phải comment của người đang thực hiện thao tác xóa hay không 

@@ -97,9 +97,9 @@ exports.getPostsByUserId = (req, res) => {
             }
             return res.status(SUCCESS_OK).json(posts)
         })
-    // .catch(e => {
-    //     return res.status(BAD_REQUEST).json({ message: e.message })
-    // })
+    .catch(e => {
+        return res.status(BAD_REQUEST).json({ message: e.message })
+    })
 }
 
 exports.getPost = (req, res) => {
