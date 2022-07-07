@@ -1,7 +1,7 @@
 const { BAD_REQUEST, LIMIT_PAGING, POST_NOT_FOUND, CASTERROR, NOT_THING_CHANGE, SUCCESS_OK } = require('../../library/constant')
 const conversation = require('../../models/conversation')
 const account = require('../../models/user')
-const notification = require('../../models/notification')
+const message = require('../../models/message')
 const comment = require('../../models/comment')
 const userOnline = require('../../models/userOnline')
 
@@ -12,9 +12,9 @@ exports.createConversation = (req, res) => {
     account.find({ _id: { $in: [receiverId, req.userId] } })
     .then(data => {
         if (data.length === 2) {
-            conversation.findOne({members: { $in: [receiverId,  req.userId] }}).populate("members")
-            .then(existConversation=>{
-                if (!existConversation){
+            conversation.findOne({members: { $all: [receiverId,  req.userId] }}).populate("members")
+            .then(isExistConversation=>{
+                if (!isExistConversation){
                     var newConversation = new conversation({
                         members: [receiverId, req.userId]
                     })
@@ -69,3 +69,34 @@ exports.getConversationOfCurrentUser = (req,res)=>{
         return res.status(BAD_REQUEST).json({ message: e.message })
     })
 }
+
+
+exports.createMessage = (req,res) =>{
+    var {mess, conversationId} = req.body
+    conversation.findById(conversationId)
+    .then(conversationInfo=>{
+        var newMess = new message({
+            conversationId: conversationId,
+            senderId: req.userId,
+            text: mess
+        })
+        newMess.save()
+        
+        .then((newMess)=>{
+            // trả dữ liệu realtime chỗ này 
+            newMess.populate("senderId")
+            .then(newMess=>{
+                return res.json(newMess)
+            })
+
+        })
+    })
+    .catch(e=>{
+        return res.status(BAD_REQUEST).json({ message: e.message }) 
+    })
+
+}
+
+
+// khi bấm vào icon chat thì sẽ load ra các conversation => từ đây tạo join các user vào phòng ( số lượng phòng dựa trên số tin nhắn ) 
+// thông báo tin nhắn mới sẽ giống nhưu thông bào noti sẽ dựa trên userOnline

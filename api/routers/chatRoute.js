@@ -50,6 +50,50 @@ router.post("/conversation/", checkAuthen, chatController.createConversation)
  */
 router.get("/conversation/", checkAuthen, chatController.getAllConversationOfCurrentUser)
 
-
+/**
+ * @swagger
+ * /conversation/{receiverId}:
+ *  get:
+ *    tags: [Chat]
+ *    summary: Get conversation.
+ *    description: get conversation of current user 
+ *    responses:
+ *      '200':
+ *        description: OK
+ *      400:
+ *        description: Bad request
+ *      403:
+ *        description: Not authen
+ */
 router.get("/conversation/:receiverId", checkAuthen, chatController.getConversationOfCurrentUser)
+
+
+/**
+ * @swagger
+ * /message:
+ *  post:
+ *    tags: [Chat]
+ *    summary: Create message.
+ *    description: create message
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              conversationId:
+ *                type: string
+ *              text:
+ *                type: string
+ * 
+ *    responses:
+ *      '200':
+ *        description: OK
+ *      400:
+ *        description: Bad request
+ *      403:
+ *        description: Not authen
+ */
+ router.post("/message", checkAuthen, chatController.createMessage)
 module.exports = router

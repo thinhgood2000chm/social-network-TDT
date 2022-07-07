@@ -5,6 +5,6 @@ const userOnlineSchema = new Schema({
     socketId: String
 
 },{timestamps:true})
-const useOnline = mongoose.model("useOnline",userOnlineSchema,"useOnline")
+const userOnline = mongoose.model("userOnline",userOnlineSchema,"userOnline")
 
-module.exports = useOnline
+module.exports = userOnline

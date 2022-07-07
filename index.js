@@ -120,7 +120,6 @@ io.on("connection", (socket) => { ///Handle khi có connect từ client tới
         }).save()
       }
       else{
-        console.log("jajajaj")
         await userOnline.update({userId:idNewUser},{$set:  {socketId:socket.id}}, {multi: true } )
       }}
     catch(e){
