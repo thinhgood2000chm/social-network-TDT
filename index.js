@@ -110,13 +110,23 @@ const io = new Server(httpServer, {
 // console.log("New client connected " + socket.id); 
 io.on("connection", (socket) => { ///Handle khi có connect từ client tới
   socket.on("newUser",async(idNewUser) => {
-    dataUserOnline = await userOnline.findOne({userId:idNewUser, socketId:socket.id})
-    if(!dataUserOnline){
-        await new userOnline({
-          userId:idNewUser,
-          socketId: socket.id
-      }).save()
+    try{   
+      dataUserOnline = await userOnline.findOne({userId:idNewUser})
+
+      if(!dataUserOnline){
+          await new userOnline({
+            userId:idNewUser,
+            socketId: socket.id
+        }).save()
+      }
+      else{
+        console.log("jajajaj")
+        await userOnline.update({userId:idNewUser},{$set:  {socketId:socket.id}}, {multi: true } )
+      }}
+    catch(e){
+      console.error(e.message)
     }
+ 
   // socket.on("newUser", (idNewUser) => {
   //   console.log(idNewUser, socket.id)
   //   userOnline.findOne({ userId: idNewUser, socketId: socket.id })

@@ -12,17 +12,26 @@ exports.createConversation = (req, res) => {
     account.find({ _id: { $in: [receiverId, req.userId] } })
     .then(data => {
         if (data.length === 2) {
-            var newConversation = new conversation({
-                members: [receiverId, req.userId]
+            conversation.findOne({members: { $in: [receiverId,  req.userId] }})
+            .then(isExistConversation=>{
+                if (!isExistConversation){
+                    var newConversation = new conversation({
+                        members: [receiverId, req.userId]
+                    })
+                    newConversation.save()
+                    .then(newConversation=>{
+                        newConversation.populate("members")
+                        .then(newConversation=>{
+                            return res.json(newConversation)
+                        })
+        
+                    })
+                }
+                else{
+                    return  res.json({ "description": 'đã tồn tại cuộc trò chuyện ' })
+                }
             })
-            newConversation.save()
-            .then(newConversation=>{
-                newConversation.populate("members")
-                .then(newConversation=>{
-                    return res.json(newConversation)
-                })
-
-            })
+        
         }
         else {
             return res.json({ "description": `${receiverId}, ${req.userId} có user không tồn tại` })
