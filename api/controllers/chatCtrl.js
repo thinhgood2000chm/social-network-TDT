@@ -12,7 +12,7 @@ exports.createConversation = (req, res) => {
     account.find({ _id: { $in: [receiverId, req.userId] } })
     .then(data => {
         if (data.length === 2) {
-            conversation.findOne({members: { $in: [receiverId,  req.userId] }})
+            conversation.findOne({members: { $in: [receiverId,  req.userId] }}).populate("members")
             .then(existConversation=>{
                 if (!existConversation){
                     var newConversation = new conversation({
