@@ -39,7 +39,7 @@ exports.createConversation = (req, res) => {
 
 exports.getAllConversationOfCurrentUser = (req,res)=>{
     var userId = req.userId
-    conversation.find({members: { $in: [userId] }})
+    conversation.find({members: { $in: [userId] }}).populate('members')
     .then(conversations=>{
         return res.json(conversations)
     })
