@@ -12,9 +12,9 @@ exports.createConversation = (req, res) => {
     account.find({ _id: { $in: [receiverId, req.userId] } })
     .then(data => {
         if (data.length === 2) {
-            conversation.findOne({members: { $in: [receiverId,  req.userId] }})
-            .then(isExistConversation=>{
-                if (!isExistConversation){
+            conversation.findOne({members: { $in: [receiverId,  req.userId] }}).populate("members")
+            .then(existConversation=>{
+                if (!existConversation){
                     var newConversation = new conversation({
                         members: [receiverId, req.userId]
                     })
@@ -28,7 +28,8 @@ exports.createConversation = (req, res) => {
                     })
                 }
                 else{
-                    return  res.json({ "description": 'đã tồn tại cuộc trò chuyện ' })
+                    return res.json(existConversation)
+                    // return res.json({ "description": 'đã tồn tại cuộc trò chuyện ' })
                 }
             })
         
