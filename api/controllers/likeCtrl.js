@@ -35,7 +35,7 @@ exports.likePost = (req,res)=>{
                                 userOnline.findOne({userId: postInfo.createdBy.toString()})
                                 .then(dataUserOnline=>{
                                     // nếu ko tìm thấy đồng nghĩa user đó đã off
-                                    if(dataUserOnline){
+                                    if(dataUserOnline && dataUserOnline.userId !== req.userId){
                                         app.IoObject.to(dataUserOnline.socketId).emit("receiveMessageLike",`${userLikeInfo.fullname} đã thích bài viết của bạn`)
                                     }
                                     

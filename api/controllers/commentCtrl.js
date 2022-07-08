@@ -41,8 +41,7 @@ exports.createComment = (req,res)=>{
                                     userOnline.findOne({userId: postInfo.createdBy.toString()})
                                     .then(dataUserId=>{
                                         // nếu ko tìm thấy đồng nghĩa user đó đã off
-                                        if(dataUserId){
-                                            console.log("da vao real time")
+                                        if(dataUserId && dataUserId.userId !== req.userId){
                                             app.IoObject.to(dataUserId.socketId).emit("receiveMessageNoti",`${userinfo.fullname} đã bình luận bài viết của bạn`)
 
                                         }
@@ -50,7 +49,6 @@ exports.createComment = (req,res)=>{
                                      
                                     })
                                     if(newComment){
-                                        console.log("da vo duoi rôi ne", postInfo._id)
                                         app.IoObject.in(postInfo._id.toString()).emit("receiveCommentInfo",newComment )
                                     }
                             
