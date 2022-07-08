@@ -28,7 +28,7 @@ exports.createConversation = (req, res) => {
                     })
                 }
                 else{
-                    return res.json(existConversation)
+                    return res.json(isExistConversation)
                     // return res.json({ "description": 'đã tồn tại cuộc trò chuyện ' })
                 }
             })
