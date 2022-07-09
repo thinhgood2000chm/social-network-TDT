@@ -98,13 +98,22 @@ router.get("/conversation/:receiverId", checkAuthen, chatController.getConversat
  router.post("/message", checkAuthen, chatController.createMessage)
 
 
+
+
  /**
  * @swagger
- * /conversation/message:
+ * /conversation/{conversationId}/message:
  *  get:
- *    tags: [Chat]
+ *    tags:
+ *      - Chat
  *    summary: get all mess of conversation
  *    description: get all mess of conversation
+ *    parameters:
+ *      - name: skip
+ *        in: query
+ *        description: number message will be skip
+ *        required: false
+ *        type: integer
  *    responses:
  *      '200':
  *        description: OK
