@@ -6,6 +6,7 @@ const { cloudinary } = require('../../library/cloundinary');
 const getLinkYoutube = require('../../library/getLinkYoutube')
 
 const PostModel = require('../../models/post');
+const CommentModel = require('../../models/comment')
 const { post } = require('../routers/userRoute');
 
 // const AccountModel = require('../../models/user')
@@ -230,8 +231,18 @@ exports.deletePost = (req, res) => {
             // delete share post
             PostModel.deleteMany({ rootPost: postID })
                 .then((dataShare) => {
-                    return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data, dataShare: dataShare })
+
+                    // delete comment
+                    CommentModel.deleteMany({postID: postID})
+                    .then(dataCmt => {
+                        console.log({ message: 'Xóa thành công!', data: data, dataShare: dataShare, dataCmt: dataCmt })
+                        return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data, dataShare: dataShare, dataCmt: dataCmt })
+                    })
+                    
+
                 })
+
+            
         })
         .catch(e => {
             return res.status(BAD_REQUEST).json({ message: e.message })
