@@ -96,4 +96,22 @@ router.get("/conversation/:receiverId", checkAuthen, chatController.getConversat
  *        description: Not authen
  */
  router.post("/message", checkAuthen, chatController.createMessage)
+
+
+ /**
+ * @swagger
+ * /conversation/message:
+ *  get:
+ *    tags: [Chat]
+ *    summary: get all mess of conversation
+ *    description: get all mess of conversation
+ *    responses:
+ *      '200':
+ *        description: OK
+ *      400:
+ *        description: Bad request
+ *      403:
+ *        description: Not authen
+ */
+  router.get("/conversation/:conversationId/message", checkAuthen, chatController.getMessage)
 module.exports = router

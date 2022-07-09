@@ -97,6 +97,18 @@ exports.createMessage = (req,res) =>{
 
 }
 
+// danh sachs các message của 1 conversation
+exports.getMessage = (req,res)=>{
+    var {conversationId} = req.params
+     message.find({conversationId:conversationId}).populate('senderId').populate("conversationId")
+     .then(conversationData=>{
+        console.log(conversationData)
+        return res.json(conversationData)
+     })
+     .catch(e=>{
+        return res.status(BAD_REQUEST).json({ message: e.message }) 
+     })
+}
 
-// khi bấm vào icon chat thì sẽ load ra các conversation => từ đây tạo join các user vào phòng ( số lượng phòng dựa trên số tin nhắn ) 
+// guwir tin nhắn cho từng cá nhân dựa trên socket id 
 // thông báo tin nhắn mới sẽ giống nhưu thông bào noti sẽ dựa trên userOnline

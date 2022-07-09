@@ -80,6 +80,11 @@ exports.likePost = (req,res)=>{
              }
        
         })
+            
+        .catch(err=>{
+                return res.status(BAD_REQUEST).json({"message": err.message})
+            
+        })
     })
         
         // TODO đang thiếu phần nếu bấm 1 lần nữa thì sẽ ko like bài viết nữa
