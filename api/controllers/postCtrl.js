@@ -7,24 +7,21 @@ const getLinkYoutube = require('../../library/getLinkYoutube')
 
 const PostModel = require('../../models/post');
 const CommentModel = require('../../models/comment')
+const UserModel = require('../../models/user')
 const { post } = require('../routers/userRoute');
-
-// const AccountModel = require('../../models/user')
 
 
 exports.getPosts = (req, res) => {
-    //TODO: scroll loading
-    //-- chưa test cái này
     const userId = req.userId
-    
-    PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0)*LIMIT_PAGING)
+
+    PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
         .populate('createdBy')
         // .populate({path:'likedBy',
-            // options: {
-            //     limit: 10,
-            //     sort: { created: -1},
-            //     skip: req.params.pageIndex*10
-            // }
+        // options: {
+        //     limit: 10,
+        //     sort: { created: -1},
+        //     skip: req.params.pageIndex*10
+        // }
         // })
         .populate({
             path: 'commentPost',
@@ -53,24 +50,12 @@ exports.getPosts = (req, res) => {
 
             return res.status(SUCCESS_OK).json(posts)
         })
-    // .catch(e => {
-    //     return res.status(BAD_REQUEST).json({ message: e.message })
-    // })
 }
 
 exports.getPostsByUserId = (req, res) => {
-    //TODO: scroll loading
-    //-- chưa test cái này
     const userId = req.params.userID
-    PostModel.find({ createdBy: userId }).sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0)*LIMIT_PAGING)
+    PostModel.find({ createdBy: userId }).sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
         .populate('createdBy')
-        // .populate({path:'likedBy',
-        //     options: {
-        //         limit: 10,
-        //         sort: { created: -1},
-        //         skip: req.params.pageIndex*10
-        //     }
-        // })
         .populate({
             path: 'commentPost',
             populate: { path: 'createdBy' },
@@ -85,7 +70,6 @@ exports.getPostsByUserId = (req, res) => {
             populate: { path: 'createdBy' }
         })
         .then(posts => {
-
             for (var index = 0; index < posts.length; index++) {
                 posts[index] = posts[index].toJSON()
                 if (posts[index].likedBy.toString().includes(userId)) {
@@ -98,9 +82,51 @@ exports.getPostsByUserId = (req, res) => {
             }
             return res.status(SUCCESS_OK).json(posts)
         })
-    .catch(e => {
-        return res.status(BAD_REQUEST).json({ message: e.message })
-    })
+        .catch(e => {
+            return res.status(BAD_REQUEST).json({ message: e.message })
+        })
+}
+
+exports.getPostsOfAllFriends = (req, res) => {
+    const userId = req.userId
+
+    UserModel.findById(userId)
+        .then(user => {
+            //{ $or: [ { createdBy: { $in: user.friends } }, { createdBy: { $in: user.friends } } ] }
+            PostModel.find({ $or: [{ createdBy: { $in: user.friends } }, { rootPost: { $in: user.friends } }] })
+                // .sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
+                // .populate('createdBy')
+                // .populate({
+                //     path: 'commentPost',
+                //     populate: { path: 'createdBy' },
+                //     options: {
+                //         limit: 2,
+                //         sort: { createdAt: -1 },
+                //         skip: req.params.pageIndex * 2
+                //     }
+                // })
+                // .populate({
+                //     path: 'rootPost',
+                //     populate: { path: 'createdBy' }
+                // })
+                .then(posts => {
+                    for (var index = 0; index < posts.length; index++) {
+                        posts[index] = posts[index].toJSON()
+                        if (posts[index].likedBy.toString().includes(userId)) {
+                            posts[index].isLikePost = true // isLikePost dùng để kiểm tra xem người hiện tại đang đăng nhập đã like bài viết hay chưa
+                            // posts[index].isLikePost
+                        }
+                        else {
+                            posts[index].isLikePost = false
+                        }
+                    }
+                    return res.status(SUCCESS_OK).json(posts)
+                })
+                .catch(e => {
+                    return res.status(BAD_REQUEST).json({ message: e.message })
+                })
+        })
+
 }
 
 exports.getPost = (req, res) => {
@@ -233,16 +259,14 @@ exports.deletePost = (req, res) => {
                 .then((dataShare) => {
 
                     // delete comment
-                    CommentModel.deleteMany({postID: postID})
-                    .then(dataCmt => {
-                        console.log({ message: 'Xóa thành công!', data: data, dataShare: dataShare, dataCmt: dataCmt })
-                        return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data, dataShare: dataShare, dataCmt: dataCmt })
-                    })
-                    
+                    CommentModel.deleteMany({ postID: postID })
+                        .then(dataCmt => {
+                            console.log({ message: 'Xóa thành công!', data: data, dataShare: dataShare, dataCmt: dataCmt })
+                            return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data, dataShare: dataShare, dataCmt: dataCmt })
+                        })
+
 
                 })
-
-            
         })
         .catch(e => {
             return res.status(BAD_REQUEST).json({ message: e.message })
