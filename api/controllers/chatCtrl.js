@@ -98,15 +98,16 @@ exports.createMessage = (req,res) =>{
                             if(dataUserId){
                                 console.log(dataUserId)
                                 app.IoObject.to(dataUserId.socketId).emit("receiveNewMess",newMess)
-                                return res.json(newMess)
+       
                             }
                             
                         })     
                         .catch(e=>{
                             return res.status(BAD_REQUEST).json({ message: e.message }) 
                         })
+    
                     }
-
+                    return res.json(newMess)
                 })
 
             })    
