@@ -1,4 +1,4 @@
-const { BAD_REQUEST, LIMIT_PAGING, POST_NOT_FOUND, CASTERROR, NOT_THING_CHANGE, SUCCESS_OK } = require('../../library/constant')
+const { BAD_REQUEST, LIMIT_MESSAGE, POST_NOT_FOUND, CASTERROR, NOT_THING_CHANGE, SUCCESS_OK } = require('../../library/constant')
 const conversation = require('../../models/conversation')
 const account = require('../../models/user')
 const message = require('../../models/message')
@@ -84,12 +84,42 @@ exports.createMessage = (req,res) =>{
         
         .then((newMess)=>{
             // trả dữ liệu realtime chỗ này 
-            newMess.populate("senderId")
+            newMess.populate("conversationId")
             .then(newMess=>{
-                return res.json(newMess)
+                newMess.populate("senderId")
+                .then((newMess)=>{
+                    otherUserInChat = newMess.conversationId.members.filter(item=>item.toString() !==newMess.senderId._id.toString() )
+
+                    if(otherUserInChat.length === 1){
+                        console.log("fffff", otherUserInChat[0])
+                        userOnline.findOne({userId: otherUserInChat[0]})
+                        .then(dataUserId=>{
+                            // nếu ko tìm thấy đồng nghĩa user đó đã off
+                            if(dataUserId){
+                                console.log(dataUserId)
+                                app.IoObject.to(dataUserId.socketId).emit("receiveNewMess",newMess)
+       
+                            }
+                            
+                        })     
+                        .catch(e=>{
+                            return res.status(BAD_REQUEST).json({ message: e.message }) 
+                        })
+    
+                    }
+                    return res.json(newMess)
+                })
+
+            })    
+            .catch(e=>{
+                return res.status(BAD_REQUEST).json({ message: e.message }) 
             })
 
+        })        
+        .catch(e=>{
+            return res.status(BAD_REQUEST).json({ message: e.message }) 
         })
+
     })
     .catch(e=>{
         return res.status(BAD_REQUEST).json({ message: e.message }) 
@@ -100,9 +130,10 @@ exports.createMessage = (req,res) =>{
 // danh sachs các message của 1 conversation
 exports.getMessage = (req,res)=>{
     var {conversationId} = req.params
-     message.find({conversationId:conversationId}).populate('senderId').populate("conversationId")
+    var {skip} = req.query
+     message.find({conversationId:conversationId}).sort({ createdAt: -1 }).skip(skip).limit(LIMIT_MESSAGE).populate('senderId').populate("conversationId")
      .then(conversationData=>{
-        console.log(conversationData)
+        // console.log(conversationData)
         return res.json(conversationData)
      })
      .catch(e=>{
