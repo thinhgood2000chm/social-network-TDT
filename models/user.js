@@ -34,6 +34,7 @@ const accountSchema = new Schema({
     username: {
         type: String,
         required: true,
+        unique: true
     }, // sử dụng chung username và email là 1, username dùng cho admin còn student sẽ lưu lại email ở đây 
     biography: {
         type: String,
