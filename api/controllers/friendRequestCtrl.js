@@ -115,9 +115,9 @@ exports.deniRequest = (req,res)=>{
 }
 
 exports.listAll = (req,res)=>{
-    // var {userId} = req.params
+    var {userId} = req.params
     var {start} = req.query
-    var userId = req.userId
+    // var userId = req.userId
     skip = Number(start)*LIMIT_PAGING
     account.findById(userId).lean().populate({
         path:"friends",
