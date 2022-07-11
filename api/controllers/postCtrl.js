@@ -54,7 +54,8 @@ exports.getPosts = (req, res) => {
 
 exports.getPostsByUserId = (req, res) => {
     const userId = req.params.userID
-    PostModel.find({ createdBy: userId }).sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
+    PostModel.find({ createdBy: userId })
+        .sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
         .populate('createdBy')
         .populate({
             path: 'commentPost',
@@ -92,23 +93,22 @@ exports.getPostsOfAllFriends = (req, res) => {
 
     UserModel.findById(userId)
         .then(user => {
-            //{ $or: [ { createdBy: { $in: user.friends } }, { createdBy: { $in: user.friends } } ] }
-            PostModel.find({ $or: [{ createdBy: { $in: user.friends } }, { rootPost: { $in: user.friends } }] })
-                // .sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
-                // .populate('createdBy')
-                // .populate({
-                //     path: 'commentPost',
-                //     populate: { path: 'createdBy' },
-                //     options: {
-                //         limit: 2,
-                //         sort: { createdAt: -1 },
-                //         skip: req.params.pageIndex * 2
-                //     }
-                // })
-                // .populate({
-                //     path: 'rootPost',
-                //     populate: { path: 'createdBy' }
-                // })
+            PostModel.find({ $or: [ { createdBy: userId }, { createdBy: { $in: user.friends } } ] })
+                .sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
+                .populate('createdBy')
+                .populate({
+                    path: 'commentPost',
+                    populate: { path: 'createdBy' },
+                    options: {
+                        limit: 2,
+                        sort: { createdAt: -1 },
+                        skip: req.params.pageIndex * 2
+                    }
+                })
+                .populate({
+                    path: 'rootPost',
+                    populate: { path: 'createdBy' }
+                })
                 .then(posts => {
                     for (var index = 0; index < posts.length; index++) {
                         posts[index] = posts[index].toJSON()
