@@ -41,6 +41,9 @@ exports.likePost = (req,res)=>{
                                     
                                  
                                 })
+                                .catch(e=>{
+                                    console.log(e.message)
+                                })
                                 // // cập nhật lại cho user của bài viết chuỗi id của thông báo vừa tạo
                                 // account.findByIdAndUpdate(postInfo.userId, {$push:{notification:newNotification._id}})
                                 // .then(()=>{

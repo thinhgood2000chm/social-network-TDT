@@ -2,6 +2,9 @@ const { USER_NOT_FOUND, SUCCESS_OK, CASTERROR, FRIEND_REQUEST_NOT_FOUND, LIMIT_P
 const { mapReduce } = require('../../models/friendRequest')
 const friendRequest = require('../../models/friendRequest')
 const account = require('../../models/user')
+const userOnline = require('../../models/userOnline')
+const notification = require('../../models/notification')
+const app = require('../../index')
 
 exports.createRequestNewFriend = (req,res)=>{
     var userId = req.userId
@@ -10,7 +13,6 @@ exports.createRequestNewFriend = (req,res)=>{
     .then((userWantRequestInfo)=>{
         account.findById(userId)
         .then((userSendrequest)=>{
-            console.log(userWantRequestInfo.friends)
             if(userWantRequestInfo.friends.includes(userId)){
                
                 return res.json({"error":"Đã kết bạn đến người này rồi "})
@@ -22,14 +24,42 @@ exports.createRequestNewFriend = (req,res)=>{
                         return res.json({'description':'Request đã được gửi đến user này', "friendStatus": false}) //  "friendStatus": false( đã gửi lời mời ) 
                     }
                     else{
-                    let newFriendRequest = new friendRequest({
-                        userReceiveId: idUserWantsendRequest,
-                        userRequest: userId
-                    })
-                    newFriendRequest.save()
-                    .then(newFriendRequest=>{
-                        return res.json({'description':'gửi yêu cầu thành công'})
-                    })
+                        let newFriendRequest = new friendRequest({
+                            userReceiveId: idUserWantsendRequest,
+                            userRequest: userId
+                        })
+                        newFriendRequest.save()
+                        .then(newFriendRequest=>{
+                            newNotification = new notification(
+                                {
+                                    userId:idUserWantsendRequest, // người tạo bài viết ( thể hiện cái noti này là của user nào )
+                                    userIdGuest: userId,
+                                    content: `${userSendrequest.fullname} đã gửi lời mời kết bạn`
+                                }
+                
+                            )
+                            newNotification.save()
+                            .then((newNoti)=>{
+                                userOnline.findOne({userId: idUserWantsendRequest})
+                                .then(dataUserOnline=>{
+                                    // nếu ko tìm thấy đồng nghĩa user đó đã off
+                                    console.log("da vaooooo", userSendrequest.fullname)
+                                    if(dataUserOnline && dataUserOnline.userId !== req.userId){
+                                        app.IoObject.to(dataUserOnline.socketId).emit("receiveFriendRequestInfo",`${userSendrequest.fullname} đã gửi lời mời kết bạn`)
+                                    }
+                                    
+                                
+                                })
+                                .catch(e=>{
+                                    console.log(e.message)
+                                })
+                                return res.json({'description':'gửi yêu cầu thành công'})
+                            })
+                    
+                        })
+                        .catch(e=>{
+                            return res.status(BAD_REQUEST).json({"message": e.message}) 
+                        })
                     }
        
                 })

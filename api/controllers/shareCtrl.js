@@ -11,8 +11,13 @@ exports.createShare = (req,res)=>{
 
     post.findById(postId) // check xem id post có tồn tại hay không
     .then((postInfo)=>{
+        // nếu bài viết là bài share lại bài của người khác thì khi nhấn share sẽ share bài gốc 
+        if(postInfo.rootPost){
+            postId = postInfo.rootPost
+            
+        }
         // không sử dụng element match thì sẽ ra như bình thường 
-        post.find({rootPost:postId, userId:userId}) // check nếu user hiện tại đã chia sẻ bài viết rồi thì ko cho chia sẻ nữa
+        post.find({rootPost:postId, createdBy:userId}) // check nếu user hiện tại đã chia sẻ bài viết rồi thì ko cho chia sẻ nữa
       
         // {
         //     post:{

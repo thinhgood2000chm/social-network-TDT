@@ -10,7 +10,7 @@ const notificationSchema = new Schema({
         ref: 'account'
     },
     content: String,
-    isChecked:{ // id người mà tương tác để thông báo được gửi về cho người kia
+    isChecked:{ 
         type: Boolean,
         default:false
     },
