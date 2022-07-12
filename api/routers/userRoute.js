@@ -36,7 +36,7 @@ const upload = require("../../library/uploadFile")
  *      400:
  *        description: Bad request
  *      403:
- *        description: Not authen
+ *        description: forbidden
  */
 router.post("/account/register", userController.register)
 router.post("/account/login", userController.login)

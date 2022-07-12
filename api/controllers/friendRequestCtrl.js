@@ -140,7 +140,7 @@ exports.deniRequest = (req,res)=>{
     }
     )
     .catch(e=>{
-        res.status(BAD_REQUEST).json({ message: e.message })
+        res.status(BAD_REQUEST).json({ "message": e.message })
     })
 }
 
@@ -181,6 +181,50 @@ exports.listAllFriendRequest = (req,res)=>{
     friendRequest.find({userReceiveId:userId, status:false}).populate('userRequest').sort({ createdAt: -1, }).skip(start).limit(10)
     .then(listFriendRequest=>{
         return res.json(listFriendRequest)
+    })
+    .catch(e=>{
+        res.status(BAD_REQUEST).json({ "message": e.message })
+    })
+
+}
+
+
+exports.deleteFriend = (req,res)=>{
+    var {friendId} = req.params
+    var userId = req.userId
+    
+    account.findOneAndUpdate({_id:userId, friends: { $in: [friendId] }},  { $pull: { friends: friendId}}, {new:true})
+    .then((data)=>{
+        console.log("ffffffffffff", data)
+        if(data ===null){
+            return res.json({"description": "friendId không tồn tại"})
+        }
+        else{
+            account.findOneAndUpdate({_id:friendId, friends: { $in: [userId] }},  { $pull: { friends: userId}}, {new:true})
+            .then(dataUser2=>{
+                if(data ===null){
+                    return res.json({"description": "friendId không tồn tại"})
+                }
+                else{
+                    friendRequest.findOneAndDelete({$or:[{userReceiveId:userId, userRequest: friendId, status: true}, {userReceiveId:friendId, userRequest: userId, status: true}]})
+                    .then((isSuccess=>{
+                        return res.json({"description": "Hủy kết bạn thành công"})
+                    }))
+                    .catch(e=>{
+                        res.status(BAD_REQUEST).json({ "message": e.message }) 
+                    })
+                
+
+                }
+            })   
+            .catch(e=>{
+                res.status(BAD_REQUEST).json({ "message": e.message }) 
+            })
+        
+        }
+    })
+    .catch(e=>{
+        res.status(BAD_REQUEST).json({ "message": e.message }) 
     })
 
 }
