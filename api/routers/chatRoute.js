@@ -28,7 +28,7 @@ const checkAuthen = require('../../library/middleWareAuthen')
  *      400:
  *        description: Bad request
  *      403:
- *        description: Not authen
+ *        description: forbidden
  */
 router.post("/conversation/", checkAuthen, chatController.createConversation)
 
@@ -46,7 +46,7 @@ router.post("/conversation/", checkAuthen, chatController.createConversation)
  *      400:
  *        description: Bad request
  *      403:
- *        description: Not authen
+ *        description: forbidden
  */
 router.get("/conversation/", checkAuthen, chatController.getAllConversationOfCurrentUser)
 
@@ -63,7 +63,7 @@ router.get("/conversation/", checkAuthen, chatController.getAllConversationOfCur
  *      400:
  *        description: Bad request
  *      403:
- *        description: Not authen
+ *        description: forbidden
  */
 router.get("/conversation/:receiverId", checkAuthen, chatController.getConversationOfCurrentUser)
 
@@ -93,7 +93,7 @@ router.get("/conversation/:receiverId", checkAuthen, chatController.getConversat
  *      400:
  *        description: Bad request
  *      403:
- *        description: Not authen
+ *        description: forbidden
  */
  router.post("/message", checkAuthen, chatController.createMessage)
 
@@ -120,7 +120,7 @@ router.get("/conversation/:receiverId", checkAuthen, chatController.getConversat
  *      400:
  *        description: Bad request
  *      403:
- *        description: Not authen
+ *        description: forbidden
  */
   router.get("/conversation/:conversationId/message", checkAuthen, chatController.getMessage)
 module.exports = router
