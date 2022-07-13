@@ -18,9 +18,7 @@ exports.updateAccount = (req, res) => {
 
     bcrypt.hash(password, 10, (err, hashedPass) => {
         if (err) {
-            return res.json({
-                error: err
-            })
+            return res.json({error: err})
         }
         newData = {
             username: username,
