@@ -4,10 +4,9 @@ const router = express.Router()
 const shareController = require('../controllers/shareCtrl')
 /**
  * @swagger
- * /post/{postId}/share:
+ * /api/post/{postId}/share:
  *  post:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: Share a post
  *    description: Share a post
  *    parameters:

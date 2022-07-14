@@ -6,10 +6,9 @@ const checkAuthen = require('../../library/middleWareAuthen')
 
 /**
  * @swagger
- * /post/{postId}/comment:
+ * /api/post/{postId}/comment:
  *  post:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: Comment a post
  *    description: Comment a post
  *    parameters:
@@ -23,6 +22,15 @@ const checkAuthen = require('../../library/middleWareAuthen')
  *        description: comment content
  *        required: true
  *        type: string
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              content:
+ *                type: string
  *    responses:
  *      '200':
  *        description: OK
@@ -35,10 +43,9 @@ router.post('/post/:postId/comment/', checkAuthen, commentController.createComme
 
 /**
  * @swagger
- * /post/{postId}/comment:
+ * /api/post/{postId}/comment:
  *  delete:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: Delete a comment
  *    description: Delete a comment
  *    parameters:
@@ -64,10 +71,9 @@ router.delete('/post/:postId/comment/:commentId', checkAuthen, commentController
 
 /**
  * @swagger
- * /post/{postId}/comment:
+ * /api/post/{postId}/comment:
  *  get:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: get all post comments
  *    description: get all post comments
  *    parameters:

@@ -10,10 +10,9 @@ const uploadFile = require('../../library/uploadFile')
 
 /**
  * @swagger
- * /post/{page}:
+ * /api/post/{page}:
  *  get:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: get all post comments
  *    description: get all post comments
  *    parameters:
@@ -34,10 +33,9 @@ router.get('/post/:page?',checkAuthen, postController.getPosts)
 
  /**
  * @swagger
- * /post/{postID}:
+ * /api/post/{postID}:
  *  get:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: Get a post
  *    description: Get a post
  *    parameters:
@@ -54,14 +52,13 @@ router.get('/post/:page?',checkAuthen, postController.getPosts)
  *      403:
  *        description: forbidden
  */
-router.get('/post/:postID',checkAuthen, postController.getPost)
+router.get('/post/:postID/detail',checkAuthen, postController.getPost)
 
  /**
  * @swagger
- * /post/friend/{page}:
+ * /api/post/friend/{page}:
  *  get:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    description: Get all posts by friends and myself
  *    parameters:
  *      - name: page
@@ -81,10 +78,9 @@ router.get('/post/friend/:page?',checkAuthen, postController.getPostsOfAllFriend
 
  /**
  * @swagger
- * /post/user/{userID}/{page}:
+ * /api/post/user/{userID}/{page}:
  *  get:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: Get all posts by one person
  *    description: Get all posts by one person
  *    parameters:
@@ -110,29 +106,25 @@ router.get('/post/user/:userID/:page?',checkAuthen, postController.getPostsByUse
 
 /**
  * @swagger
- * /post:
+ * /api/post:
  *  post:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: Post a post
  *    description: Post a post
- *    parameters:
- *      - name: postContent
- *        in: query
- *        description: post content
- *        required: false
- *        type: string
- *      - name: postVideo
- *        in: query
- *        description: link YouTube video
- *        required: false
- *        type: string
- *      - name: postImages
- *        in: query
- *        description: post content
- *        required: false
- *        type: string
- *        format: binary
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              postContent:
+ *                type: string
+ *              postVideo:
+ *                type: string
+ *              postImages:
+ *                type: string
+ *                format: binary
  *    responses:
  *      '200':
  *        description: OK
@@ -143,13 +135,11 @@ router.get('/post/user/:userID/:page?',checkAuthen, postController.getPostsByUse
  */
 router.post('/post', checkAuthen, postLimiter, uploadFile.array('postImages'), postController.createPost)
 
-
 /**
  * @swagger
- * /post/{postID}:
+ * /api/post/{postID}:
  *  put:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: Update a post
  *    description: Update a post
  *    parameters:
@@ -158,22 +148,20 @@ router.post('/post', checkAuthen, postLimiter, uploadFile.array('postImages'), p
  *        description: post id
  *        required: true
  *        type: string
- *      - name: postContent
- *        in: query
- *        description: post content
- *        required: false
- *        type: string
- *      - name: postVideo
- *        in: query
- *        description: link YouTube video
- *        required: false
- *        type: string
- *      - name: postImages
- *        in: query
- *        description: post content
- *        required: false
- *        type: string
- *        format: binary
+ *    requestBody:
+ *      content:
+ *        required: true
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              postContent:
+ *                type: string
+ *              postVideo:
+ *                type: string
+ *              postImages:
+ *                type: string
+ *                format: binary
  *    responses:
  *      '200':
  *        description: OK
@@ -184,13 +172,11 @@ router.post('/post', checkAuthen, postLimiter, uploadFile.array('postImages'), p
  */
 router.put('/post/:postID', checkAuthen, postLimiter, uploadFile.array('postImages'), postController.updatePost)
 
-
 /**
  * @swagger
- * /post/{postID}:
+ * /api/post/{postID}:
  *  delete:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: Delete a post
  *    description: Delete a post and all its comments
  *    parameters:

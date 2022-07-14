@@ -8,10 +8,9 @@ const checkAuthen = require('../../library/middleWareAuthen')
 
  /**
  * @swagger
- * /notification:
+ * /api/notification:
  *  get:
- *    tags:
- *      - Notification
+ *    tags: [Notification]
  *    summary: Get all notification
  *    description: Get all notification
  *    responses:
@@ -26,10 +25,9 @@ router.get("/notification", checkAuthen, notificationCtrl.getAllNoti)
 
  /**
  * @swagger
- * /notification/status:
+ * /api/notification/status:
  *  post:
- *    tags:
- *      - Notification
+ *    tags: [Notification]
  *    summary: Change status notification
  *    description: Change status notification from `false` to `true`
  *    requestBody:
@@ -53,12 +51,12 @@ router.get("/notification", checkAuthen, notificationCtrl.getAllNoti)
  *        description: forbidden
  */
 router.post("/notification/status", checkAuthen, notificationCtrl.changeStatus)
+
  /**
  * @swagger
- * /notification/status:
+ * /api/notification/status:
  *  delete:
- *    tags:
- *      - Notification
+ *    tags: [Notification]
  *    summary: Delete notification
  *    description: Soft delete notification
  *    parameters:

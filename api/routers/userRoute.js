@@ -9,7 +9,7 @@ const upload = require('../../library/uploadFile')
 
 /**
  * @swagger
- * /account/register:
+ * /api/account/register:
  *  post:
  *    tags: [Account]
  *    summary: Register account.
@@ -42,7 +42,7 @@ router.post("/account/register", userController.register)
 
 /**
  * @swagger
- * /account/login:
+ * /api/account/login:
  *  post:
  *    tags: [Account]
  *    summary: Login.
@@ -73,7 +73,7 @@ router.post("/account/login", userController.login)
 
 /**
  * @swagger
- * /account/oauth2:
+ * /api/account/oauth2:
  *  post:
  *    tags: [Account]
  *    summary: Login.
@@ -101,7 +101,7 @@ router.post("/account/oauth2", userController.oauth2)
 
 /**
  * @swagger
- * /account:
+ * /api/account:
  *  get:
  *    tags: [Account]
  *    summary: Detail user.
@@ -118,7 +118,7 @@ router.get("/account/", checkAuthen, userController.detail)
 
 /**
  * @swagger
- * /account/{userId}:
+ * /api/account/{userId}:
  *  put:
  *    tags: [Account]
  *    summary: Update account.
@@ -172,12 +172,11 @@ router.get("/account/", checkAuthen, userController.detail)
  *      403:
  *        description: forbidden
  */
-
 router.put("/account/:userId", checkAuthen, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'backgroundPicture', maxCount: 1 }]), userController.updateAccount)
 
 /**
  * @swagger
- * /account/password:
+ * /api/account/password/change:
  *  post:
  *    tags: [Account]
  *    summary: Change password.
@@ -204,11 +203,39 @@ router.put("/account/:userId", checkAuthen, upload.fields([{ name: 'image', maxC
  *      403:
  *        description: forbidden
  */
-router.put('/account/password', checkAuthen, userController.changePassword)
+router.put('/account/password/change', checkAuthen, userController.changePassword)
 
 /**
  * @swagger
- * /profile/{userId}:
+ * /api/account/password/create:
+ *  post:
+ *    tags: [Account]
+ *    summary: Create password.
+ *    description:  Create password to login with email and password
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              newPassword:
+ *                type: string
+ *                required: true
+ *     
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ *      400:
+ *        description: Bad request
+ *      403:
+ *        description: forbidden
+ */
+router.put('/account/password/create', checkAuthen, userController.createPassword)
+
+/**
+ * @swagger
+ * /api/profile/{userId}:
  *  get:
  *    tags: [Account]
  *    summary: Profile.
@@ -229,10 +256,9 @@ router.put('/account/password', checkAuthen, userController.changePassword)
  */
 router.get("/profile/:userId", checkAuthen, userController.profile)
 
-
 /**
  * @swagger
- * /account/{name}:
+ * /api/account/{name}:
  *  get:
  *    tags: [Account]
  *    summary: Profile.

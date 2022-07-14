@@ -4,10 +4,9 @@ const router = express.Router()
 const likeCtrl = require('../controllers/likeCtrl')
 /**
  * @swagger
- * /post/{postId}/like:
+ * /api/post/{postId}/like:
  *  post:
- *    tags:
- *      - Post
+ *    tags: [Post]
  *    summary: Like a post
  *    description: Like a post
  *    parameters:

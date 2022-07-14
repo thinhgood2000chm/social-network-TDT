@@ -6,7 +6,7 @@ const checkAuthen = require('../../library/middleWareAuthen')
 
 /**
  * @swagger
- * /conversation:
+ * /api/conversation:
  *  post:
  *    tags: [Chat]
  *    summary: Create conversation.
@@ -35,7 +35,7 @@ router.post("/conversation/", checkAuthen, chatController.createConversation)
 
 /**
  * @swagger
- * /conversation:
+ * /api/conversation:
  *  get:
  *    tags: [Chat]
  *    summary: Get conversation.
@@ -52,7 +52,7 @@ router.get("/conversation/", checkAuthen, chatController.getAllConversationOfCur
 
 /**
  * @swagger
- * /conversation/{receiverId}:
+ * /api/conversation/{receiverId}:
  *  get:
  *    tags: [Chat]
  *    summary: Get conversation.
@@ -70,7 +70,7 @@ router.get("/conversation/:receiverId", checkAuthen, chatController.getConversat
 
 /**
  * @swagger
- * /message:
+ * /api/message:
  *  post:
  *    tags: [Chat]
  *    summary: Create message.
@@ -102,7 +102,7 @@ router.get("/conversation/:receiverId", checkAuthen, chatController.getConversat
 
  /**
  * @swagger
- * /conversation/{conversationId}/message:
+ * /api/conversation/{conversationId}/message:
  *  get:
  *    tags:
  *      - Chat

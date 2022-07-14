@@ -5,7 +5,7 @@ const checkAuthen = require('../../library/middleWareAuthen')
 const friendCrtl = require("../controllers/friendRequestCtrl")
  /**
  * @swagger
- * /requestFriend/{idUserWantsendRequest}:
+ * /api/requestFriend/{idUserWantsendRequest}:
  *  post:
  *    tags:
  *      - Friend
@@ -28,7 +28,7 @@ const friendCrtl = require("../controllers/friendRequestCtrl")
 router.post("/requestFriend/:idUserWantsendRequest",checkAuthen, friendCrtl.createRequestNewFriend)
  /**
  * @swagger
- * /requestFriend/reply/{idUserInQueueforAccept}:
+ * /api/requestFriend/reply/{idUserInQueueforAccept}:
  *  post:
  *    tags:
  *      - Friend
@@ -51,7 +51,7 @@ router.post("/requestFriend/:idUserWantsendRequest",checkAuthen, friendCrtl.crea
 router.post("/requestFriend/reply/:idUserInQueueforAccept", checkAuthen, friendCrtl.acceptRequest)
  /**
  * @swagger
- * /friend/{userId}:
+ * /api/friend/{userId}:
  *  get:
  *    tags:
  *      - Friend
@@ -74,7 +74,7 @@ router.post("/requestFriend/reply/:idUserInQueueforAccept", checkAuthen, friendC
 router.get("/friend/:userId", checkAuthen, friendCrtl.listAll)
  /**
  * @swagger
- * /requestFriend/deny/{idUserInQueueforAccept}:
+ * /api/requestFriend/deny/{idUserInQueueforAccept}:
  *  post:
  *    tags:
  *      - Friend
@@ -99,7 +99,7 @@ router.post("/requestFriend/deny/:idUserInQueueforAccept", checkAuthen, friendCr
 
  /**
  * @swagger
- * /requestFriend/:
+ * /api/requestFriend/:
  *  get:
  *    tags:
  *      - Friend
@@ -119,7 +119,7 @@ router.get("/requestFriend/", checkAuthen, friendCrtl.listAllFriendRequest)
 
  /**
  * @swagger
- * /deleteFriend/{friendId}:
+ * /api/deleteFriend/{friendId}:
  *  delete:
  *    tags:
  *      - Friend
