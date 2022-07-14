@@ -47,11 +47,54 @@ exports.createConversation = (req, res) => {
 }
 
 
-exports.getAllConversationOfCurrentUser = (req,res)=>{
+exports.getAllConversationOfCurrentUser = async(req,res)=>{
     var userId = req.userId
     conversation.find({members: { $in: [userId] }}).populate('members')
     .then(conversations=>{
-        return res.json(conversations)
+        console.log("conversations", conversations)
+        const menberIdOnline = []
+        for(var i = 0; i< conversations.length; i ++){
+            for(var j = 0; j< conversations[i].members.length; j++){
+                userOnlineId =conversations[i].members[j]._id 
+                if(!menberIdOnline.includes(userOnlineId) && userOnlineId.toString()!==userId.toString()){
+                    menberIdOnline.push(userOnlineId.toString())
+                } 
+            }
+
+            if( i === conversations.length -1){
+                console.log(menberIdOnline)
+                userOnline.find({userId:{$in:menberIdOnline}}).distinct("userId")
+                .then(userOnlines=>{
+                    console.log("fffffffff", userOnlines)
+                    for(var l =0 ;l<conversations.length;l++){
+                        conversations[l] =  conversations[l].toJSON()
+                        for(var k = 0; k< conversations[l].members.length; k++){
+                            // conversations[l].members[k] =  conversations[l].members[k].toJSON()
+        
+                            if(userOnlines.includes(conversations[l].members[k]._id.toString() )){
+                   
+                                conversations[l].members[k].isOnline = true
+
+                            }
+                            else{
+                                conversations[l].members[k].isOnline = false
+                            }
+                        }
+                        if(l===conversations.length-1){
+                            return res.json(conversations)
+                        }
+                    }
+              
+                })
+                .catch(e=>{
+                    return res.status(BAD_REQUEST).json({ message: e.message }) 
+                })
+            }
+       
+        }
+
+
+
     })
     .catch(e=>{
         return res.status(BAD_REQUEST).json({ message: e.message })
@@ -63,6 +106,7 @@ exports.getConversationOfCurrentUser = (req,res)=>{
     var  {receiverId} = req.params
     conversation.findOne({ members: { $all: [currentUserId, receiverId] }})
     .then(conversation=>{
+
         return res.json(conversation)
     })
     .catch(e=>{
@@ -89,16 +133,13 @@ exports.createMessage = (req,res) =>{
                 newMess.populate("senderId")
                 .then((newMess)=>{
                     otherUserInChat = newMess.conversationId.members.filter(item=>item.toString() !==newMess.senderId._id.toString() )
-
                     if(otherUserInChat.length === 1){
-                        console.log("fffff", otherUserInChat[0])
-                        userOnline.findOne({userId: otherUserInChat[0]})
+                        userOnline.findOne({userId: otherUserInChat[0], status:true})
                         .then(dataUserId=>{
                             // nếu ko tìm thấy đồng nghĩa user đó đã off
                             if(dataUserId){
                                 console.log(dataUserId)
                                 app.IoObject.to(dataUserId.socketId).emit("receiveNewMess",newMess)
-       
                             }
                             
                         })     

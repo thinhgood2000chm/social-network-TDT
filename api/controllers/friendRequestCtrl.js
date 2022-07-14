@@ -40,7 +40,7 @@ exports.createRequestNewFriend = (req,res)=>{
                             )
                             newNotification.save()
                             .then((newNoti)=>{
-                                userOnline.findOne({userId: idUserWantsendRequest})
+                                userOnline.findOne({userId: idUserWantsendReques, status:true})
                                 .then(dataUserOnline=>{
                                     // nếu ko tìm thấy đồng nghĩa user đó đã off
                                     console.log("da vaooooo", userSendrequest.fullname)

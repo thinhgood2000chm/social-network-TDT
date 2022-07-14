@@ -32,7 +32,7 @@ exports.likePost = (req,res)=>{
                         newNotification.save()
                         .then(
                             (newNotification)=>{
-                                userOnline.findOne({userId: postInfo.createdBy.toString()})
+                                userOnline.findOne({userId: postInfo.createdBy.toString(), status:true})
                                 .then(dataUserOnline=>{
                                     // nếu ko tìm thấy đồng nghĩa user đó đã off
                                     if(dataUserOnline && dataUserOnline.userId !== req.userId){
