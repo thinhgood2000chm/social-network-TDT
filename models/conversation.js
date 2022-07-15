@@ -4,6 +4,7 @@ const conversationSchema = new Schema({
     members: [
         {
             type: Schema.Types.ObjectId,
+            required: true,
             ref: 'account'
         }
     ]
