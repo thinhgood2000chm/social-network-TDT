@@ -119,11 +119,12 @@ io.on("connection", (socket) => { ///Handle khi có connect từ client tới
       if(!dataUserOnline){
           await new userOnline({
             userId:idNewUser,
-            socketId: socket.id
+            socketId: socket.id,
+            status: true
         }).save()
       }
       else{
-        await userOnline.update({userId:idNewUser},{$set:  {socketId:socket.id}}, {multi: true } )
+        await userOnline.update({userId:idNewUser},{$set:  {socketId:socket.id, status:true}}, {multi: true } )
       }}
     catch(e){
       console.error(e.message)
@@ -160,9 +161,13 @@ socket.on('joinRoom', roomName =>{
   // console.log(socket.rooms)
   // io.in(roomName).emit("receiveCommentInfo","du lieu comment mơi ")
 })
-socket.on("disconnect", () => {
+socket.on("disconnect_session", async(userId)=>{
+  console.log("da vao ")
+  await userOnline.update({userId:userId},{$set:  {status:false}}, {multi: true } )
+})
+socket.on("disconnect", async() => {
   console.log(" da vao díconec", socket.id)
-  removeUser(socket.id)
+  await userOnline.update({socketId:socket.id},{$set:  {status:false}}, {multi: true } )
 });
 
 });

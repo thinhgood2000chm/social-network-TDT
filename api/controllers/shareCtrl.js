@@ -59,7 +59,7 @@ exports.createShare = (req,res)=>{
                         )
                         newNotification.save()
                         .then(()=>{
-                            userOnline.findOne({userId: postInfo.createdBy.toString()})
+                            userOnline.findOne({userId: postInfo.createdBy.toString(), status:true})
                             .then(dataUserOnline=>{
                                 // nếu ko tìm thấy đồng nghĩa user đó đã off
                                 if(dataUserOnline){
