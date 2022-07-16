@@ -112,7 +112,6 @@ exports.deleteComment = (req,res)=>{
     .then((commentInfo)=>{
         // kiểm tra xem đây có phải comment của người đang thực hiện thao tác xóa hay không 
         if(req.userId ===  commentInfo.createdBy._id.toString()){
-            console.log("da vao")
             comment.findByIdAndDelete(commentId)
             .then(
                 ()=>{

@@ -8,7 +8,6 @@ const app = require('../../index')
 exports.likePost = (req,res)=>{
     var {postId} = req.params
     var userIdLike = req.userId
-    console.log("da vao ")
     account.findById(userIdLike)
     .then((userLikeInfo)=>{
         
@@ -17,10 +16,8 @@ exports.likePost = (req,res)=>{
             if(data == null){
                 post.findByIdAndUpdate(postId, {$push:{likedBy:userIdLike}}, {new: true})
                 .then((postInfo)=>{
-                    console.log(postInfo)
                     // nếu người like ko phải người tạo ra bài viết 
                     if(userIdLike !==postInfo.createdBy.toString()){
-                        console.log(" da vao 123123")
                         newNotification = new notification(
                             {
                                 userId: postInfo.createdBy, // người tạo bài viết ( thể hiện cái noti này là của user nào )
@@ -74,7 +71,6 @@ exports.likePost = (req,res)=>{
             else{
                 post.findByIdAndUpdate(postId, {$pull:{likedBy:userIdLike}}, {new: true})
                 .then((postInfo)=>{
-                    console.log(postInfo)
                     return  res.json({"status":false, "length":postInfo.likedBy.length})
                 })  
                 .catch(err=>{

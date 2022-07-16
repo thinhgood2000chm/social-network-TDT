@@ -38,7 +38,6 @@ exports.deleteNoti = (req, res)=>{
 exports.changeStatus = (req,res)=>{
     const userId = req.userId
     const {notificationId} = req.body
-    console.log(" da vao ")
     account.findById(userId)
     .then(()=>{
         notification.findOneAndUpdate({_id:notificationId, userId: userId}, {isChecked: true }, {new:true} ).populate('userId').populate('userIdGuest')

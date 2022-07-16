@@ -146,7 +146,6 @@ exports.getAllConversationOfCurrentUser = (req, res) => {
             
                                         }
                                         else{
-                                            console.log(  lastMsgFromOther[l])
                                             lastMsgFromOther[l].senderId.isOnline = false
                                         }
                                     // }

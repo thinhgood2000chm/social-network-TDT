@@ -63,7 +63,6 @@ exports.createShare = (req,res)=>{
                             .then(dataUserOnline=>{
                                 // nếu ko tìm thấy đồng nghĩa user đó đã off
                                 if(dataUserOnline){
-                                    console.log("da vao real time")
                                     app.IoObject.to(dataUserOnline.socketId).emit("receiveMessageShare",`${accountUserShare.fullname} đã chia sẻ bài viết của bạn`)
                                 }
                                 

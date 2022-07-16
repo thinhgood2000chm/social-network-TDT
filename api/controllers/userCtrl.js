@@ -48,11 +48,8 @@ exports.register = (req, res) => {
 
 exports.login = (req, res) => {
     var { username, password } = req.body
-    if (!username) {
-        return res.status(BAD_REQUEST).json({ "description": "thiếu username" })
-    }
-    if (!password) {
-        return res.status(BAD_REQUEST).json({ "description": "thiếu password" })
+    if (!username || !password) {
+        return res.status(BAD_REQUEST).json({ "description": "Vui lòng nhập đầy đủ thông tin" })
     }
     account.findOne({ username: username }).then(
         account => {
@@ -62,7 +59,6 @@ exports.login = (req, res) => {
                 }
                 if (result) {
                     let token = jwt.sign({ id: account._id }, JWT_SECRET, { expiresIn: '4h' })
-                    console.log(token)
                     return res.json({
                         "token": token,
                         "userInfo": account
@@ -75,7 +71,7 @@ exports.login = (req, res) => {
 
         }
     ).catch(err => {
-        return res.status(BAD_REQUEST).json({ "description": "username không tồn tại ", "error": err })
+        return res.status(BAD_REQUEST).json({ "description": "Tài khoản không tồn tại ", "error": err })
     })
 
 }
@@ -107,7 +103,6 @@ exports.oauth2 = (req, res) => {
                             })
                             newAccount.save()
                                 .then(newAccount => {
-                                    console.log(newAccount)
                                     let token = jwt.sign({ id: newAccount._id }, JWT_SECRET, { expiresIn: '4h' })
                                     return res.json({
                                         "token": token,
@@ -194,7 +189,6 @@ exports.updateAccount = async (req, res) => {
         var pictureInCloud = await cloudinary.uploader.upload(picture.path, { folder: userId })
         fs.unlinkSync(picture.path)
         var pictureUrl = pictureInCloud.url
-        console.log(pictureInCloud)
         pictureCloundId = pictureInCloud.public_id
     }
     if (backgroundPicture) {
@@ -342,7 +336,6 @@ exports.profile = (req, res) => {
             }
             friendRequest.findOne({ $or: [{ userRequest: userIdCurrentLogin, userReceiveId: userId }, { userRequest: userId, userReceiveId: userIdCurrentLogin }] })
                 .then(friendRequestInfo => {
-                    console.log("123123123", friendRequestInfo, friendRequestInfo?.status === true)
                     // friend status : false: đã gửi lời mời chưa được accept, true là bạn, null chưa là gì cả, other: chờ xác nhận 
 
                     if (friendRequestInfo == null) {
@@ -376,7 +369,6 @@ exports.findUser = (req, res) => {
         .then((accountInfos) => {
             friendRequest.find({ $or: [{ userRequest: req.userId }, { userReceiveId: req.userId }] })
                 .then(requestFriendInfos => {
-                    console.log("requestFriendInfos", requestFriendInfos)
                     const idUserReceiveRequest_requestInfo = {}
                     const idUserRequest_requestInfo = {}
                     for (var i = 0; i < requestFriendInfos.length; i++) {
@@ -385,7 +377,6 @@ exports.findUser = (req, res) => {
                         idUserRequest_requestInfo[requestFriendInfoJsons['userRequest']] = requestFriendInfoJsons
                     }
                     //{$or:[{userRequest: userIdCurrentLogin, userReceiveId: userId}, {userRequest: userId, userReceiveId: userIdCurrentLogin}]}
-                    console.log("123123", idUserReceiveRequest_requestInfo)
                     for (var i = 0; i < accountInfos.length; i++) {
                         accountInfos[i] = accountInfos[i].toJSON()
 

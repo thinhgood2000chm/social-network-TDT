@@ -261,7 +261,6 @@ exports.deletePost = (req, res) => {
                     // delete comment
                     CommentModel.deleteMany({ postID: postID })
                         .then(dataCmt => {
-                            console.log({ message: 'Xóa thành công!', data: data, dataShare: dataShare, dataCmt: dataCmt })
                             return res.status(SUCCESS_OK).json({ message: 'Xóa thành công!', data: data, dataShare: dataShare, dataCmt: dataCmt })
                         })
 
