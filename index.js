@@ -66,7 +66,7 @@ mongoose.connect("mongodb+srv://dacntt2:dacntt2@socialnetworktdt.x9hcb.mongodb.n
   })
   .catch((e) => console.log("Khong the ket noi toi db server: " + e.message));
 
-const httpServer = app.listen(PORT, () => console.log("http://localhost:" + PORT))
+const httpServer = app.listen(process.env.PORT||PORT, () => console.log("http://localhost:" + process.env.PORT||PORT))
 
 
 // const io = require('./library/socketio').init(httpServer);
