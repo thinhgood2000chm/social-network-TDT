@@ -5,7 +5,7 @@ const cors = require('cors') // cho phép truy cập từ domain khác
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require("swagger-jsdoc");
 
-const { PORT } = require('./library/constant')
+const { PORT, HOST } = require('./library/constant')
 const app = express()
 // router
 const AccountRouter = require('./api/routers/userRoute')
@@ -31,7 +31,7 @@ const swaggerOptions = {
       contact: {
         name: "Amazing Developer"
       },
-      servers: ["http://localhost:8080"]
+      servers: [HOST]
     }
   },
   // ['.routes/*.js']
