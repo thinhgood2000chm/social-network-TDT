@@ -43,7 +43,6 @@ exports.createRequestNewFriend = (req,res)=>{
                                 userOnline.findOne({userId: idUserWantsendReques, status:true})
                                 .then(dataUserOnline=>{
                                     // nếu ko tìm thấy đồng nghĩa user đó đã off
-                                    console.log("da vaooooo", userSendrequest.fullname)
                                     if(dataUserOnline && dataUserOnline.userId !== req.userId){
                                         app.IoObject.to(dataUserOnline.socketId).emit("receiveFriendRequestInfo",`${userSendrequest.fullname} đã gửi lời mời kết bạn`)
                                     }
@@ -85,7 +84,6 @@ exports.acceptRequest = (req,res)=>{
     var {idUserInQueueforAccept} = req.params
     friendRequest.findOneAndUpdate({userReceiveId:userId, userRequest: idUserInQueueforAccept, status: false}, {status: true})
     .then((friendReqInfo)=>{
-        console.log("da vao ",friendReqInfo)
         if(friendReqInfo){
             // cập nhật lại thông tin bạn bè của người được gửi lời mời kết bạn
             account.findByIdAndUpdate(userId,{$push:{friends:idUserInQueueforAccept}}, {new:true})
@@ -159,7 +157,6 @@ exports.listAll = (req,res)=>{
         select:{"_id":1, "picture":1, "fullname":1}
     })
     .then(userInfo=>{
-        console.log(userInfo)
         return res.json(userInfo.friends)
     })
     .catch((err)=>{
@@ -195,7 +192,6 @@ exports.deleteFriend = (req,res)=>{
     
     account.findOneAndUpdate({_id:userId, friends: { $in: [friendId] }},  { $pull: { friends: friendId}}, {new:true})
     .then((data)=>{
-        console.log("ffffffffffff", data)
         if(data ===null){
             return res.json({"description": "friendId không tồn tại"})
         }
