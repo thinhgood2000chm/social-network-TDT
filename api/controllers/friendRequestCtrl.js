@@ -21,7 +21,7 @@ exports.createRequestNewFriend = (req,res)=>{
                 friendRequest.findOne({userReceiveId: idUserWantsendRequest, userRequest:userId, status:false})
                 .then((isSendRequest)=>{
                     if(isSendRequest){
-                        return res.json({'description':'Request đã được gửi đến user này', "friendStatus": false}) //  "friendStatus": false( đã gửi lời mời ) 
+                        return res.json({'description':'Đã gửi yêu cầu đến user này', "friendStatus": false}) //  "friendStatus": false( đã gửi lời mời ) 
                     }
                     else{
                         let newFriendRequest = new friendRequest({
@@ -40,14 +40,12 @@ exports.createRequestNewFriend = (req,res)=>{
                             )
                             newNotification.save()
                             .then((newNoti)=>{
-                                userOnline.findOne({userId: idUserWantsendReques, status:true})
+                                userOnline.findOne({userId: idUserWantsendRequest, status:true})
                                 .then(dataUserOnline=>{
                                     // nếu ko tìm thấy đồng nghĩa user đó đã off
                                     if(dataUserOnline && dataUserOnline.userId !== req.userId){
                                         app.IoObject.to(dataUserOnline.socketId).emit("receiveFriendRequestInfo",`${userSendrequest.fullname} đã gửi lời mời kết bạn`)
                                     }
-                                    
-                                
                                 })
                                 .catch(e=>{
                                     console.log(e.message)
