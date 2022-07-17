@@ -104,6 +104,10 @@ exports.getAllConversationOfCurrentUser = (req, res) => {
     var userId = req.userId
     conversation.find({ members: { $in: [userId] } }).populate('members')
         .then(conversations => {
+            console.log(conversations)
+            if(conversations.length < 1 ){
+                return res.json([])
+            }
             // get list id
             const listId = conversations.map(i => i._id.toString())
             // get all msg from other sort by time and 
