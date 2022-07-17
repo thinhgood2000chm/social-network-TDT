@@ -41,7 +41,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.json())
-app.use(cors({ credentials: true, origin: '*' })); // để client có thể gửi thông tin withCredential: true
+app.use(cors({origin: '*' })); // để client có thể gửi thông tin withCredential: true
 app.use('/api', AccountRouter)
 app.use('/api', PostRoute)
 app.use('/api', CommentRoute)
