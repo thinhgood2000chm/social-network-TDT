@@ -41,7 +41,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.json())
-app.use(cors({ credentials: true, origin: true })); // để client có thể gửi thông tin withCredential: true
+app.use(cors({ credentials: true, origin: '*' })); // để client có thể gửi thông tin withCredential: true
 app.use('/api', AccountRouter)
 app.use('/api', PostRoute)
 app.use('/api', CommentRoute)
@@ -62,7 +62,7 @@ mongoose.connect("mongodb+srv://dacntt2:dacntt2@socialnetworktdt.x9hcb.mongodb.n
   })
   .then(() => {
 
-    console.log("da ket noi thanh cong db")
+    ("da ket noi thanh cong db")
   })
   .catch((e) => console.log("Khong the ket noi toi db server: " + e.message));
 

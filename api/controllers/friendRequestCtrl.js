@@ -129,10 +129,7 @@ exports.deniRequest = (req,res)=>{
     var {idUserInQueueforAccept} = req.params
     friendRequest.findOneAndDelete({userReceiveId:userId, userRequest: idUserInQueueforAccept, status: false})
     .then((friendReqInfo)=>{
-        return res.status(SUCCESS_OK).json({
-            "description":"Đã xóa lời mời kết bạn",
-            "friendStatus":null
-        })
+        return res.status(SUCCESS_OK).json(friendReqInfo)
     }
     )
     .catch(e=>{
