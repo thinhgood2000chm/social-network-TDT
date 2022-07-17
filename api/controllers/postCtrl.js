@@ -211,7 +211,7 @@ exports.updatePost = async (req, res) => {
     let image = null
     let imageId = null
     let newData = null
-    
+
     if (postImages?.length > 0) {
         image = []
         imageId = []
@@ -239,7 +239,6 @@ exports.updatePost = async (req, res) => {
             if (!post)
                 return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
 
-            console.log(post)
             return res.status(SUCCESS_OK).json(post)
         })
         .catch(e => {

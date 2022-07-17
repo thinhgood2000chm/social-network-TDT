@@ -13,7 +13,7 @@ module.exports = {
   get: () => {
 
     if (!io) {
-      console.log('chuwa khoiwr taoj socket')
+      console.log('chưa khởi tạo socket')
     }
     return io;
   }

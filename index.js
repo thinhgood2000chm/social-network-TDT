@@ -62,7 +62,7 @@ mongoose.connect("mongodb+srv://dacntt2:dacntt2@socialnetworktdt.x9hcb.mongodb.n
   })
   .then(() => {
 
-    console.log("da ket noi thanh cong db")
+    ("da ket noi thanh cong db")
   })
   .catch((e) => console.log("Khong the ket noi toi db server: " + e.message));
 

@@ -6,7 +6,7 @@ const {BAD_REQUEST, NOTIFICATION_NOT_FOUND, CASTERROR,LIMIT_PAGING} = require('.
 
 exports.getAllNoti = (req, res) => {
     var {skip} = req.query || 0
-    notification.find({ userId: req.userId, deletedFlag: false }).sort({ createdAt: -1, }).skip(skip).limit(10).populate('userId').populate('userIdGuest')
+    notification.find({ userId: req.userId, deletedFlag: false }).sort({ createdAt: -1, }).skip(skip).limit(LIMIT_PAGING).populate('userId').populate('userIdGuest')
         .then((listNoti) => {
             return res.json(listNoti)
         })
