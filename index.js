@@ -41,7 +41,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.json())
-app.use(cors({origin: '*' })); // để client có thể gửi thông tin withCredential: true
+app.use(cors({ credentials: true, origin: "https://tdt-social-network.herokuapp.com" })); // để client có thể gửi thông tin withCredential: true
 app.use('/api', AccountRouter)
 app.use('/api', PostRoute)
 app.use('/api', CommentRoute)
@@ -62,7 +62,7 @@ mongoose.connect("mongodb+srv://dacntt2:dacntt2@socialnetworktdt.x9hcb.mongodb.n
   })
   .then(() => {
 
-    ("da ket noi thanh cong db")
+    console.log("da ket noi thanh cong db")
   })
   .catch((e) => console.log("Khong the ket noi toi db server: " + e.message));
 
