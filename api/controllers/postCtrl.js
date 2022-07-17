@@ -93,7 +93,7 @@ exports.getPostsOfAllFriends = (req, res) => {
 
     UserModel.findById(userId)
         .then(user => {
-            PostModel.find({ $or: [ { createdBy: userId }, { createdBy: { $in: user.friends } } ] })
+            PostModel.find({ $or: [{ createdBy: userId }, { createdBy: { $in: user.friends } }] })
                 .sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
                 .populate('createdBy')
                 .populate({
@@ -210,7 +210,9 @@ exports.updatePost = async (req, res) => {
     let postImages = req.files
     let image = null
     let imageId = null
-    if (postImages) {
+    let newData = null
+    
+    if (postImages?.length > 0) {
         image = []
         imageId = []
         await Promise.all(postImages.map(async (file) => {
@@ -219,21 +221,25 @@ exports.updatePost = async (req, res) => {
             imageId.push(cloud.public_id)
             fs.unlinkSync(file.path)
         }))
+        // save
+        newData = {
+            content: postContent,
+            image: image,
+            imageId: imageId,
+            video: linkVideo
+        }
+    }else {
+        newData = {
+            content: postContent,
+            video: linkVideo
+        }
     }
-
-    // save
-    newData = {
-        content: postContent,
-        image: image,
-        imageId: imageId,
-        video: linkVideo
-    }
-
-    PostModel.findOneAndUpdate({ _id: postID, createdBy: userId }, { $set: newData }, { new: true })
+    PostModel.findOneAndUpdate({ _id: postID, createdBy: userId }, newData, { new: true })
         .then((post) => {
             if (!post)
                 return res.status(BAD_REQUEST).json({ message: POST_NOT_FOUND })
 
+            console.log(post)
             return res.status(SUCCESS_OK).json(post)
         })
         .catch(e => {
