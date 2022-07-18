@@ -48,58 +48,6 @@ exports.createConversation = (req, res) => {
 }
 
 
-// exports.getAllConversationOfCurrentUser = async(req,res)=>{
-//     var userId = req.userId
-//     conversation.find({members: { $in: [userId] }}).populate('members')
-//     .then(conversations=>{
-// console.log("conversations", conversations)
-// const menberIdOnline = []
-// for(var i = 0; i< conversations.length; i ++){
-//     for(var j = 0; j< conversations[i].members.length; j++){
-//         userOnlineId =conversations[i].members[j]._id 
-//         if(!menberIdOnline.includes(userOnlineId) && userOnlineId.toString()!==userId.toString()){
-//             menberIdOnline.push(userOnlineId.toString())
-//         } 
-//     }
-
-//     if( i === conversations.length -1){
-//         console.log(menberIdOnline)
-//         userOnline.find({userId:{$in:menberIdOnline}}).distinct("userId")
-//         .then(userOnlines=>{
-//             console.log("fffffffff", userOnlines)
-//             for(var l =0 ;l<conversations.length;l++){
-//                 conversations[l] =  conversations[l].toJSON()
-//                 for(var k = 0; k< conversations[l].members.length; k++){
-//                     // conversations[l].members[k] =  conversations[l].members[k].toJSON()
-
-//                     if(userOnlines.includes(conversations[l].members[k]._id.toString() )){
-
-//                         conversations[l].members[k].isOnline = true
-
-//                     }
-//                     else{
-//                         conversations[l].members[k].isOnline = false
-//                     }
-//                 }
-//                 if(l===conversations.length-1){
-//                     return res.json(conversations)
-//                 }
-//             }
-
-//         })
-//         .catch(e=>{
-//             return res.status(BAD_REQUEST).json({ message: e.message }) 
-//         })
-//     }
-// }
-
-//         })
-//         .catch(e => {
-//             return res.status(BAD_REQUEST).json({ message: e.message })
-//         })
-
-
-
 exports.getAllConversationOfCurrentUser = (req, res) => {
     var userId = req.userId
     conversation.find({ members: { $in: [userId] } }).populate('members')
@@ -142,8 +90,6 @@ exports.getAllConversationOfCurrentUser = (req, res) => {
 
                     const menberIdOnline = []
                     for (var i = 0; i < lastMsgFromOther.length; i++) {
-                        // for(var j = 0; j< lastMsgFromOther[i].conversationId.members.length; j++){
-                        //     userOnlineId =lastMsgFromOther[i].conversationId.members[j]._id 
                         if (!menberIdOnline.includes(lastMsgFromOther[i].senderId)) {
                             menberIdOnline.push(lastMsgFromOther[i].senderId._id.toString())
                             // } 
@@ -153,17 +99,14 @@ exports.getAllConversationOfCurrentUser = (req, res) => {
                             userOnline.find({ userId: { $in: menberIdOnline }, status: true }).distinct("userId")
                                 .then(userOnlines => {
                                     for (var l = 0; l < lastMsgFromOther.length; l++) {
-                                        // lastMsgFromOther[l] = lastMsgFromOther[l].toJSON()
-                                        // for(var k = 0; k< lastMsgFromOther[l].conversationId.members.length; k++){
-                                        // conversations[l].members[k] =  conversations[l].members[k].toJSON()
                                         if (lastMsgFromOther[l].senderId) {
+                                            lastMsgFromOther[l] =   lastMsgFromOther[l].toJSON()
                                             if (userOnlines.includes(lastMsgFromOther[l].senderId._id.toString())) {
                                                 lastMsgFromOther[l].senderId.isOnline = true
                                             }
                                             else {
                                                 lastMsgFromOther[l].senderId.isOnline = false
                                             }
-                                            // }
 
                                         }
                                         if (l === lastMsgFromOther.length - 1) {
