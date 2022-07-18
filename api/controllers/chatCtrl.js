@@ -100,7 +100,12 @@ exports.getAllConversationOfCurrentUser = (req, res) => {
                                 .then(userOnlines => {
                                     for (var l = 0; l < lastMsgFromOther.length; l++) {
                                         if (lastMsgFromOther[l].senderId) {
-                                            lastMsgFromOther[l] =   lastMsgFromOther[l].toJSON()
+                                            if(lastMsgFromOther[l].text !== '...'){
+                                                lastMsgFromOther[l] = lastMsgFromOther[l].toJSON()
+                                            }
+                                            else{
+                                                lastMsgFromOther[l].senderId = lastMsgFromOther[l].senderId.toJSON()
+                                            }
                                             if (userOnlines.includes(lastMsgFromOther[l].senderId._id.toString())) {
                                                 lastMsgFromOther[l].senderId.isOnline = true
                                             }
