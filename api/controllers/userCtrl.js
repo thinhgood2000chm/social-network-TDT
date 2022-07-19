@@ -129,40 +129,14 @@ exports.oauth2 = (req, res) => {
 exports.detail = (req, res) => {
     var userId = req.userId
 
-    // kiểm tra id của user bằng cách lấy id sau khi decode của bearer token 
+    account.findById(userId).populate('friends')
+    .then((userInfo) => {
+        if (!userInfo)
+            return res.status(BAD_REQUEST).json({ "description": USER_NOT_FOUND })
 
-    // chỗ này nếu sửa lại if (userinfo){
-    //     for(i=0;i<1000;i++){
-
-    //     }
-    //     return res.json(userInfo)
-    // }
-    // return res.send("hehe")
-    // thì hehe sẽ chạy trước( đây 1 vấn đề bất đồng bộ trong js)
-    // nên cần else để tránh việc này 
-    account.findById(userId, (err, userInfo) => {
-        // kiểm tra thêm trong này cho chắc 
-        if (err) {
-            // return res.json({"description":USER_NOT_FOUND})
-            return res.json({ "description": USER_NOT_FOUND })
-        }
-        else {
-            return res.json(userInfo)
-            // return res.json({
-            //     "id": userInfo._id,
-            //     "givenName": userInfo.givenName,
-            //     "familyName": userInfo.familyName,
-            //     "fullname": userInfo.fullname,
-            //     "username": userInfo.username,
-            //     "biography": userInfo.biography,
-            //     "className": userInfo.className,
-            //     "faculty": userInfo.faculty,
-            //     "picture":userInfo.picture
-
-            // })
-        }
-
+        return res.status(SUCCESS_OK).json(userInfo)
     })
+    .catch(e => {return res.json({ "description": e })})
 
 }
 

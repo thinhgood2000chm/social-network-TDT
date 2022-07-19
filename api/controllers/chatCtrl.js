@@ -52,7 +52,6 @@ exports.getAllConversationOfCurrentUser = (req, res) => {
     var userId = req.userId
     conversation.find({ members: { $in: [userId] } }).populate('members')
         .then(conversations => {
-            console.log(conversations)
             if(conversations.length < 1 ){
                 return res.json([])
             }
@@ -138,6 +137,8 @@ exports.getConversationOfCurrentUser = (req, res) => {
     var { receiverId } = req.params
     conversation.findOne({ members: { $all: [currentUserId, receiverId] } })
         .then(conversation => {
+            if(conversation.length<1)
+                return res.json([])
             return res.json(conversation)
         })
         .catch(e => {
