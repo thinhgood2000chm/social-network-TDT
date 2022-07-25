@@ -10,58 +10,88 @@ exports.likePost = (req,res)=>{
     var userIdLike = req.userId
     account.findById(userIdLike)
     .then((userLikeInfo)=>{
-        
+        console.log("da vao nè ")
         post.findOne({_id:postId, likedBy: userIdLike})
         .then((data)=>{
             if(data == null){
                 post.findByIdAndUpdate(postId, {$push:{likedBy:userIdLike}}, {new: true})
                 .then((postInfo)=>{
-                    // nếu người like ko phải người tạo ra bài viết 
-                    if(userIdLike !==postInfo.createdBy.toString()){
-                        newNotification = new notification(
-                            {
-                                userId: postInfo.createdBy, // người tạo bài viết ( thể hiện cái noti này là của user nào )
-                                userIdGuest: userIdLike,
-                                content: `${userLikeInfo.fullname} đã thích bài viết của bạn`
-                            }
-            
-                        )
-                        newNotification.save()
-                        .then(
-                            (newNotification)=>{
-                                userOnline.findOne({userId: postInfo.createdBy.toString(), status:true})
-                                .then(dataUserOnline=>{
-                                    // nếu ko tìm thấy đồng nghĩa user đó đã off
-                                    if(dataUserOnline && dataUserOnline.userId !== req.userId){
-                                        app.IoObject.to(dataUserOnline.socketId).emit("receiveMessageLike",`${userLikeInfo.fullname} đã thích bài viết của bạn`)
+                    postInfo.populate('likedBy')
+                    .then(postInfo=>{
+                        console.log(postInfo)
+                        // nếu người like ko phải người tạo ra bài viết 
+                        if(userIdLike !==postInfo.createdBy.toString()){
+                            newNotification = new notification(
+                                {
+                                    userId: postInfo.createdBy, // người tạo bài viết ( thể hiện cái noti này là của user nào )
+                                    userIdGuest: userIdLike,
+                                    content: `${userLikeInfo.fullname} đã thích bài viết của bạn`
+                                }
+                
+                            )
+                            newNotification.save()
+                            .then(
+                                (newNotification)=>{
+                                    userOnline.findOne({userId: postInfo.createdBy.toString(), status:true})
+                                    .then(dataUserOnline=>{
+                                        // nếu ko tìm thấy đồng nghĩa user đó đã off
+                                        if(dataUserOnline && dataUserOnline.userId !== req.userId){
+                                            app.IoObject.to(dataUserOnline.socketId).emit("receiveMessageLike",`${userLikeInfo.fullname} đã thích bài viết của bạn`)
+                                        }
+                                        
+                                     
+                                    })
+                                    .catch(e=>{
+                                        console.log(e.message)
+                                    })
+                                    // // cập nhật lại cho user của bài viết chuỗi id của thông báo vừa tạo
+                                    // account.findByIdAndUpdate(postInfo.userId, {$push:{notification:newNotification._id}})
+                                    // .then(()=>{
+                                    //    return  res.json({"length":postInfo.like.length})
+                                    // })
+                                    // .catch(err=>{
+                                    //     return res.send(err.name)
+                                    // })
+                                    console.log(postInfo.likedBy)
+                                    var listLikedBy = []
+                                    if (postInfo.likedBy.length >=3 ){
+                                        listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-1]])
+                                        listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-2]])
+                                        listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-3]])
                                     }
-                                    
-                                 
+                                    else{
+                                        for(var i = postInfo.likedBy.length - 1; i>=0; i--){
+                                            listLikedBy.push( postInfo.likedBy[i])
+                                        }
+                                        
+                                    }
+                                    return  res.json({"status":true, "length":postInfo.likedBy.length, "likedBy": listLikedBy})
+                                }
+                              
+                            )
+                            .catch(err=>{
+                                    return res.send(err.name)
                                 })
-                                .catch(e=>{
-                                    console.log(e.message)
-                                })
-                                // // cập nhật lại cho user của bài viết chuỗi id của thông báo vừa tạo
-                                // account.findByIdAndUpdate(postInfo.userId, {$push:{notification:newNotification._id}})
-                                // .then(()=>{
-                                //    return  res.json({"length":postInfo.like.length})
-                                // })
-                                // .catch(err=>{
-                                //     return res.send(err.name)
-                                // })
-                                return  res.json({"status":true, "length":postInfo.likedBy.length})
+                        }
+                        else {
+                            // nếu người like là người tạo ra bài viết 
+                            var listLikedBy = []
+                            if (postInfo.likedBy.length >=3 ){
+                                listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-1]])
+                                listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-2]])
+                                listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-3]])
                             }
-                          
-                        )
-                        .catch(err=>{
-                                return res.send(err.name)
-                            })
-                    }
-                    else {
-                        // nếu người like là người tạo ra bài viết 
-                        return  res.json({"status":true, "length":postInfo.likedBy.length})
-                    }
-        
+                            else{
+                                for(var i = postInfo.likedBy.length - 1; i>=0; i--){
+                                    listLikedBy.push( postInfo.likedBy[i])
+                                }
+                                
+                            }
+                            return  res.json({"status":true, "length":postInfo.likedBy.length,  "likedBy": listLikedBy})
+                        }
+            
+                    })
+                   
         
                 })
                 .catch(err=>{
@@ -71,7 +101,24 @@ exports.likePost = (req,res)=>{
             else{
                 post.findByIdAndUpdate(postId, {$pull:{likedBy:userIdLike}}, {new: true})
                 .then((postInfo)=>{
-                    return  res.json({"status":false, "length":postInfo.likedBy.length})
+                    postInfo.populate('likedBy')
+                    .then(postInfo=>{
+                        var listLikedBy = []
+                        if (postInfo.likedBy.length >=3 ){
+                            listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-1]])
+                            listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-2]])
+                            listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-3]])
+                        }
+                        else{
+                    
+                            for(var i = postInfo.likedBy.length - 1; i>=0; i--){
+                                listLikedBy.push( postInfo.likedBy[i])
+                            }
+                            
+                        }
+                        return  res.json({"status":false, "length":postInfo.likedBy.length,"likedBy": listLikedBy })
+                    })
+                  
                 })  
                 .catch(err=>{
                     res.send(err.name)

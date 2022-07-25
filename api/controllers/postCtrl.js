@@ -16,13 +16,11 @@ exports.getPosts = (req, res) => {
 
     PostModel.find().sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
         .populate('createdBy')
-        // .populate({path:'likedBy',
-        // options: {
-        //     limit: 10,
-        //     sort: { created: -1},
-        //     skip: req.params.pageIndex*10
-        // }
-        // })
+        .populate({path:'likedBy',
+            options: {
+                limit: 3
+            }
+        })
         .populate({
             path: 'commentPost',
             populate: { path: 'createdBy' },
@@ -57,6 +55,11 @@ exports.getPostsByUserId = (req, res) => {
     PostModel.find({ createdBy: userId })
         .sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
         .populate('createdBy')
+        .populate({path:'likedBy',
+            options: {
+                limit: 3
+            }
+        })
         .populate({
             path: 'commentPost',
             populate: { path: 'createdBy' },
@@ -96,6 +99,11 @@ exports.getPostsOfAllFriends = (req, res) => {
             PostModel.find({ $or: [{ createdBy: userId }, { createdBy: { $in: user.friends } }] })
                 .sort({ createdAt: -1, }).limit(LIMIT_PAGING).skip((req.params.page || 0) * LIMIT_PAGING)
                 .populate('createdBy')
+                .populate({path:'likedBy',
+                    options: {
+                        limit: 3
+                    }
+                })
                 .populate({
                     path: 'commentPost',
                     populate: { path: 'createdBy' },
