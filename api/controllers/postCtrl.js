@@ -76,12 +76,13 @@ exports.getPostsByUserId = (req, res) => {
         .then(posts => {
             for (var index = 0; index < posts.length; index++) {
                 posts[index] = posts[index].toJSON()
-                if (posts[index].likedBy.toString().includes(userId)) {
-                    posts[index].isLikePost = true // isLikePost dùng để kiểm tra xem người hiện tại đang đăng nhập đã like bài viết hay chưa
-                    // posts[index].isLikePost
-                }
-                else {
-                    posts[index].isLikePost = false
+                for(var j = 0;j< posts[index].likedBy.length;j++){
+                    if (userId === posts[index].likedBy[j]._id.toString()){
+                        posts[index].isLikePost = true 
+                    }
+                    else {
+                        posts[index].isLikePost = false
+                    }
                 }
             }
             return res.status(SUCCESS_OK).json(posts)
@@ -120,12 +121,13 @@ exports.getPostsOfAllFriends = (req, res) => {
                 .then(posts => {
                     for (var index = 0; index < posts.length; index++) {
                         posts[index] = posts[index].toJSON()
-                        if (posts[index].likedBy.toString().includes(userId)) {
-                            posts[index].isLikePost = true // isLikePost dùng để kiểm tra xem người hiện tại đang đăng nhập đã like bài viết hay chưa
-                            // posts[index].isLikePost
-                        }
-                        else {
-                            posts[index].isLikePost = false
+                        for(var j = 0;j< posts[index].likedBy.length;j++){
+                            if (userId === posts[index].likedBy[j]._id.toString()){
+                                posts[index].isLikePost = true 
+                            }
+                            else {
+                                posts[index].isLikePost = false
+                            }
                         }
                     }
                     return res.status(SUCCESS_OK).json(posts)
