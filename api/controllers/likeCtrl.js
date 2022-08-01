@@ -25,7 +25,7 @@ exports.likePost = (req,res)=>{
                                 {
                                     userId: postInfo.createdBy, // người tạo bài viết ( thể hiện cái noti này là của user nào )
                                     userIdGuest: userIdLike,
-                                    content: `${userLikeInfo.fullname} đã thích bài viết của bạn`
+                                    content: `đã thích bài viết của bạn`
                                 }
                 
                             )

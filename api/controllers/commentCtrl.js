@@ -33,7 +33,7 @@ exports.createComment = (req,res)=>{
                             {
                                 userId: postInfo.createdBy,
                                 userIdGuest: userIdComment,
-                                content: `${userinfo.fullname} đã bình luận bài viết của bạn`
+                                content: `đã bình luận bài viết của bạn`
                             })
                             newNotification.save()
                             .then(
