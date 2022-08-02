@@ -41,7 +41,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.json())
-app.use(cors({ credentials: true, origin: "https://tdt-social-network.herokuapp.com" })); // để client có thể gửi thông tin withCredential: true
+app.use(cors({ credentials: true, origin: true })); // để client có thể gửi thông tin withCredential: true
 app.use('/api', AccountRouter)
 app.use('/api', PostRoute)
 app.use('/api', CommentRoute)
