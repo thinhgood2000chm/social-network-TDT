@@ -5,7 +5,7 @@ const cors = require('cors') // cho phép truy cập từ domain khác
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require("swagger-jsdoc");
 
-const { PORT } = require('./library/constant')
+const { PORT, HOST } = require('./library/constant')
 const app = express()
 // router
 const AccountRouter = require('./api/routers/userRoute')
@@ -31,7 +31,7 @@ const swaggerOptions = {
       contact: {
         name: "Amazing Developer"
       },
-      servers: ["http://localhost:8080"]
+      servers: [HOST]
     }
   },
   // ['.routes/*.js']
@@ -41,7 +41,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.json())
-app.use(cors({ credentials: true, origin: true })); // để client có thể gửi thông tin withCredential: true
+app.use(cors({ credentials: true, origin: "https://tdt-social-network.herokuapp.com" })); // để client có thể gửi thông tin withCredential: true
 app.use('/api', AccountRouter)
 app.use('/api', PostRoute)
 app.use('/api', CommentRoute)
@@ -62,11 +62,11 @@ mongoose.connect("mongodb+srv://dacntt2:dacntt2@socialnetworktdt.x9hcb.mongodb.n
   })
   .then(() => {
 
-    ("da ket noi thanh cong db")
+    console.log("da ket noi thanh cong db")
   })
   .catch((e) => console.log("Khong the ket noi toi db server: " + e.message));
 
-const httpServer = app.listen(PORT, () => console.log("http://localhost:" + PORT))
+const httpServer = app.listen(process.env.PORT||PORT, () => console.log("http://localhost:" + process.env.PORT||PORT))
 
 
 // const io = require('./library/socketio').init(httpServer);
