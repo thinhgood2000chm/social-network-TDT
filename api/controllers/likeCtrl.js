@@ -10,7 +10,6 @@ exports.likePost = (req,res)=>{
     var userIdLike = req.userId
     account.findById(userIdLike)
     .then((userLikeInfo)=>{
-        console.log("da vao nè ")
         post.findOne({_id:postId, likedBy: userIdLike})
         .then((data)=>{
             if(data == null){
@@ -18,7 +17,6 @@ exports.likePost = (req,res)=>{
                 .then((postInfo)=>{
                     postInfo.populate('likedBy')
                     .then(postInfo=>{
-                        console.log(postInfo)
                         // nếu người like ko phải người tạo ra bài viết 
                         if(userIdLike !==postInfo.createdBy.toString()){
                             newNotification = new notification(
@@ -52,16 +50,16 @@ exports.likePost = (req,res)=>{
                                     // .catch(err=>{
                                     //     return res.send(err.name)
                                     // })
-                                    console.log(postInfo.likedBy)
                                     var listLikedBy = []
                                     if (postInfo.likedBy.length >=3 ){
-                                        listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-1]])
-                                        listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-2]])
-                                        listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-3]])
+                                        listLikedBy.push(postInfo.likedBy[postInfo.likedBy.length-1])
+                                        listLikedBy.push(postInfo.likedBy[postInfo.likedBy.length-2])
+                                        listLikedBy.push(postInfo.likedBy[postInfo.likedBy.length-3])
                                     }
                                     else{
                                         for(var i = postInfo.likedBy.length - 1; i>=0; i--){
-                                            listLikedBy.push( postInfo.likedBy[i])
+                                            // listLikedBy.push( postInfo.likedBy[i])
+                                            listLikedBy.push(postInfo.likedBy[i])
                                         }
                                         
                                     }
