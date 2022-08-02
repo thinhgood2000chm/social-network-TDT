@@ -34,7 +34,7 @@ exports.createRequestNewFriend = (req,res)=>{
                                 {
                                     userId:idUserWantsendRequest, // người tạo bài viết ( thể hiện cái noti này là của user nào )
                                     userIdGuest: userId,
-                                    content: `${userSendrequest.fullname} đã gửi lời mời kết bạn`
+                                    content: `đã gửi lời mời kết bạn`
                                 }
                 
                             )

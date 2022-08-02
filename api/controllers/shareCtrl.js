@@ -53,7 +53,7 @@ exports.createShare = (req,res)=>{
                             {
                                 userId:postInfo.createdBy,
                                 userIdGuest: userId,
-                                content: `${accountUserShare.fullname} đã chia sẻ bài viết của bạn`
+                                content: `đã chia sẻ bài viết của bạn`
                             }
             
                         )

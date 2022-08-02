@@ -1,4 +1,4 @@
-const { BAD_REQUEST, USER_NOT_FOUND, SUCCESS_OK, GET_SOME_ERROR_WHEN_UPDATE, NOT_THING_CHANGE } = require('../../library/constant')
+const { BAD_REQUEST, USER_NOT_FOUND, SUCCESS_OK, GET_SOME_ERROR_WHEN_UPDATE, NOT_THING_CHANGE, TDT_LOGO_WHITE_BG_URL } = require('../../library/constant')
 
 const account = require('../../models/user')
 const friendRequest = require('../../models/friendRequest')
@@ -32,6 +32,7 @@ exports.register = (req, res) => {
                 picture: 'https://images.squarespace-cdn.com/content/v1/5930dc9237c5817c00b10842/1557979868721-ZFEVPV8NS06PZ21ZC174/ke17ZwdGBToddI8pDm48kBtpJ0h6oTA_T7DonTC8zFdZw-zPPgdn4jUwVcJE1ZvWQUxwkmyExglNqGp0IvTJZamWLI2zvYWH8K3-s_4yszcp2ryTI0HqTOaaUohrI8PIBqmMCQ1OP129tpEIJko8bi_9nfbnt8dRsNvtvnXdL8M/images.png',
                 givenName: givenName,
                 familyName: familyName,
+                backgroundPicture: TDT_LOGO_WHITE_BG_URL,
                 username: username,
                 password: hashedPass,
             })
@@ -97,6 +98,7 @@ exports.oauth2 = (req, res) => {
                             let newAccount = new account({
                                 fullname: response.payload.name,
                                 picture: response.payload.picture,
+                                backgroundPicture: TDT_LOGO_WHITE_BG_URL,
                                 givenName: response.payload.given_name,
                                 familyName: response.payload.family_name,
                                 username: response.payload.email,
