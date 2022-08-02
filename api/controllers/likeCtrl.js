@@ -75,9 +75,9 @@ exports.likePost = (req,res)=>{
                             // nếu người like là người tạo ra bài viết 
                             var listLikedBy = []
                             if (postInfo.likedBy.length >=3 ){
-                                listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-1]])
-                                listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-2]])
-                                listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-3]])
+                                listLikedBy.push(postInfo.likedBy[postInfo.likedBy.length-1])
+                                listLikedBy.push(postInfo.likedBy[postInfo.likedBy.length-2])
+                                listLikedBy.push(postInfo.likedBy[postInfo.likedBy.length-3])
                             }
                             else{
                                 for(var i = postInfo.likedBy.length - 1; i>=0; i--){
@@ -103,9 +103,9 @@ exports.likePost = (req,res)=>{
                     .then(postInfo=>{
                         var listLikedBy = []
                         if (postInfo.likedBy.length >=3 ){
-                            listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-1]])
-                            listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-2]])
-                            listLikedBy.push([postInfo.likedBy[postInfo.likedBy.length-3]])
+                            listLikedBy.push(postInfo.likedBy[postInfo.likedBy.length-1])
+                            listLikedBy.push(postInfo.likedBy[postInfo.likedBy.length-2])
+                            listLikedBy.push(postInfo.likedBy[postInfo.likedBy.length-3])
                         }
                         else{
                     
