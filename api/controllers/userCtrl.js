@@ -246,7 +246,9 @@ exports.updateAccount = async (req, res) => {
 exports.changePassword = async (req, res) => {
     let { newPassword, oldPassword } = req.body
     let userId = req.userId
-    if (oldPassword) {
+    if (!oldPassword || !newPassword)
+        return res.status(BAD_REQUEST).json({error: 'Vui lòng nhập đầy đủ thông tin!'})
+    else {
         currentAccount = await account.findById(userId).exec()
         if (currentAccount) {
             if (await bcrypt.compare(oldPassword, currentAccount.password)) {
