@@ -220,7 +220,7 @@ exports.updateAccount = async (req, res) => {
         givenName: givenName,
         familyName: familyName,
         fullname: `${givenName} ${familyName}`,
-        username: username,
+        // username: username,
         biography: biography,
         className: className,
         faculty: faculty,
