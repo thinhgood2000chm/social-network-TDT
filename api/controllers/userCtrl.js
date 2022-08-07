@@ -220,7 +220,7 @@ exports.updateAccount = async (req, res) => {
         givenName: givenName,
         familyName: familyName,
         fullname: `${givenName} ${familyName}`,
-        username: username,
+        // username: username,
         biography: biography,
         className: className,
         faculty: faculty,
@@ -277,18 +277,39 @@ exports.createPassword = (req, res) => {
     let { newPassword } = req.body
     let userId = req.userId
 
-    bcrypt.hash(newPassword, 10, (err, hashedPass) => {
-        if (err) {
-            return res.status(BAD_REQUEST).json({error: err})
+    if (!newPassword)
+        return res.status(BAD_REQUEST).json({error: 'Vui lòng nhập đầy đủ thông tin!'})
+
+    account.findById(userId)
+    .then(acc => {
+        if(acc.password)
+            return res.status(BAD_REQUEST).json({ error: 'Tài khoản đã tạo mật khẩu!' })
+        else {
+            bcrypt.hash(newPassword, 10, (err, hashedPass) => {
+                if (err) {
+                    return res.status(BAD_REQUEST).json({error: err})
+                }
+                acc.password = hashedPass
+                acc.save()
+                .then(newAcc => {
+                    return res.json(newAcc)
+                })
+                .catch((err) => {
+                    return res.status(BAD_REQUEST).json({ 'description': GET_SOME_ERROR_WHEN_UPDATE, 'error': err })
+                })
+            })
         }
-        account.findByIdAndUpdate(userId, {password: hashedPass}, { new: true })
-            .then(user => {
-                return res.json(user)
-            })
-            .catch((err) => {
-                return res.status(BAD_REQUEST).json({ 'description': GET_SOME_ERROR_WHEN_UPDATE, 'error': err })
-            })
+        
+        // account.findByIdAndUpdate(userId, {password: hashedPass}, { new: true })
+        //     .then(user => {
+        //         return res.json(user)
+        //     })
+        //     .catch((err) => {
+        //         return res.status(BAD_REQUEST).json({ 'description': GET_SOME_ERROR_WHEN_UPDATE, 'error': err })
+        //     })
     })
+
+    
 }
 
 exports.profile = (req, res) => {
