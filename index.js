@@ -160,6 +160,9 @@ socket.on('joinRoom', roomName =>{
   // console.log(socket.rooms)
   // io.in(roomName).emit("receiveCommentInfo","du lieu comment mơi ")
 })
+socket.on('leaveroom', roomName =>{
+  socket.leave(roomName)
+})
 socket.on("disconnect_session", async(userId)=>{
   await userOnline.update({userId:userId},{$set:  {status:false}}, {multi: true } )
 })
