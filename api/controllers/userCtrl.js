@@ -132,13 +132,13 @@ exports.detail = (req, res) => {
     var userId = req.userId
 
     account.findById(userId).populate('friends')
-    .then((userInfo) => {
-        if (!userInfo)
-            return res.status(BAD_REQUEST).json({ "description": USER_NOT_FOUND })
+        .then((userInfo) => {
+            if (!userInfo)
+                return res.status(BAD_REQUEST).json({ "description": USER_NOT_FOUND })
 
-        return res.status(SUCCESS_OK).json(userInfo)
-    })
-    .catch(e => {return res.json({ "description": e })})
+            return res.status(SUCCESS_OK).json(userInfo)
+        })
+        .catch(e => { return res.json({ "description": e }) })
 
 }
 
@@ -246,9 +246,9 @@ exports.updateAccount = async (req, res) => {
 exports.changePassword = async (req, res) => {
     let { newPassword, oldPassword } = req.body
     let userId = req.userId
-    
+
     if (!newPassword || !oldPassword)
-        return res.status(BAD_REQUEST).json({error: 'Vui lòng nhập đầy đủ thông tin!'})
+        return res.status(BAD_REQUEST).json({ error: 'Vui lòng nhập đầy đủ thông tin!' })
     else {
         currentAccount = await account.findById(userId).exec()
         if (currentAccount) {
@@ -281,38 +281,41 @@ exports.createPassword = (req, res) => {
     let userId = req.userId
 
     if (!newPassword)
-        return res.status(BAD_REQUEST).json({error: 'Vui lòng nhập đầy đủ thông tin!'})
+        return res.status(BAD_REQUEST).json({ error: 'Vui lòng nhập đầy đủ thông tin!' })
 
     account.findById(userId)
     .then(acc => {
-        if(acc.password)
+        if (acc.password)
             return res.status(BAD_REQUEST).json({ error: 'Tài khoản đã tạo mật khẩu!' })
         else {
-            bcrypt.hash(newPassword, 10, (err, hashedPass) => {
+            crypt.hash(newPassword, 10, (err, hashedPass) => {
                 if (err) {
-                    return res.status(BAD_REQUEST).json({error: err})
+                    return res.status(BAD_REQUEST).json({ error: err })
                 }
                 acc.password = hashedPass
                 acc.save()
-                .then(newAcc => {
-                    return res.json(newAcc)
-                })
-                .catch((err) => {
-                    return res.status(BAD_REQUEST).json({ 'description': GET_SOME_ERROR_WHEN_UPDATE, 'error': err })
-                })
+                    .then(newAcc => {
+                        return res.json(newAcc)
+                    })
+                    .catch((err) => {
+                        return res.status(BAD_REQUEST).json({ 'description': GET_SOME_ERROR_WHEN_UPDATE, 'error': err })
+                    })
             })
         }
-        
-        // account.findByIdAndUpdate(userId, {password: hashedPass}, { new: true })
-        //     .then(user => {
-        //         return res.json(user)
-        //     })
-        //     .catch((err) => {
-        //         return res.status(BAD_REQUEST).json({ 'description': GET_SOME_ERROR_WHEN_UPDATE, 'error': err })
-        //     })
     })
 
-    
+    // bcrypt.hash(newPassword, 10, (err, hashedPass) => {
+    //     if (err) {
+    //         return res.status(BAD_REQUEST).json({error: err})
+    //     }
+    //     account.findByIdAndUpdate(userId, {password: hashedPass}, { new: true })
+    //         .then(user => {
+    //             return res.json(user)
+    //         })
+    //         .catch((err) => {
+    //             return res.status(BAD_REQUEST).json({ 'description': GET_SOME_ERROR_WHEN_UPDATE, 'error': err })
+    //         })
+    // })
 }
 
 exports.profile = (req, res) => {
