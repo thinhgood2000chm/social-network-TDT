@@ -171,7 +171,8 @@ exports.createMessage = (req, res) => {
                                             .then(dataUserId => {
                                                 // nếu ko tìm thấy đồng nghĩa user đó đã off
                                                 if (dataUserId) {
-                                                    app.IoObject.to(dataUserId.socketId).emit('receiveNewMess', newMess)
+                                                    // app.IoObject.to(dataUserId.socketId).emit('receiveNewMess', newMess)
+                                                    app.IoObject.in(newMess.conversationId._id.toString()).emit('receiveNewMess', newMess)
 
                                                 }
 
