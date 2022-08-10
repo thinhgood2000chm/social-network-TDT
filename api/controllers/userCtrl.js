@@ -148,10 +148,7 @@ exports.updateAccount = async (req, res) => {
 
 
     // TODO : CHINRH LAIJ NEEUS KO COS ANHR THIF KO CAAPJ NHAATJ ANHR 
-    var { givenName, familyName, biography, className, faculty, birthday, phone, gender } = req.body
-
-    data = {}
-
+    var { givenName, familyName, username, biography, className, faculty, birthday, phone, gender } = req.body
     var picture = null
     var backgroundPicture = null
     if (req.files.image) {
@@ -169,18 +166,12 @@ exports.updateAccount = async (req, res) => {
         fs.unlinkSync(picture.path)
         var pictureUrl = pictureInCloud.url
         pictureCloundId = pictureInCloud.public_id
-
-        data.picture = pictureUrl
-        data.pictureId = pictureCloundId
     }
     if (backgroundPicture) {
         var backgroundPictureInCloud = await cloudinary.uploader.upload(backgroundPicture.path, { folder: userId })
         fs.unlinkSync(backgroundPicture.path)
         var backgroundPictureUrl = backgroundPictureInCloud.url
         backgroundPictureCloundId = backgroundPictureInCloud.public_id
-
-        data.backgroundPicture = backgroundPictureUrl
-        data.backgroundPictureId = backgroundPictureCloundId
     }
 
     var userInfo = await account.findById(userId)
@@ -191,35 +182,56 @@ exports.updateAccount = async (req, res) => {
     if (picture && userInfo.pictureId) {
         await cloudinary.uploader.destroy(userInfo.pictureId)
     }
-    
-    if (givenName) {
-        data.givenName = givenName
-        data.fullname= `${givenName} ${familyName}`
+    if (!givenName) {
+        var givenName = userInfo.givenName
     }
-    if (familyName) {
-        data.familyName = familyName
-        data.fullname= `${givenName} ${familyName}`
+    if (!familyName) {
+        var familyName = userInfo.familyName
+    }
+    if (!username) {
+        var username = userInfo.username
+    }
+    if (!biography) {
+        var biography = userInfo.biography
+    }
+    if (!className) {
+        var className = userInfo.className
+    }
+    if (!faculty) {
+        var faculty = userInfo.faculty
+    }
+    if (!birthday) {
+        var birthday = userInfo.birthday
+    }
+    if (!phone) {
+        var phone = userInfo.phone
+    }
+    if (!gender) {
+        var gender = userInfo.gender
+    }
+    if (!picture) {
+        var pictureUrl = userInfo.picture
+    }
+    if (!backgroundPicture) {
+        var backgroundPictureUrl = userInfo.backgroundPicture
     }
 
-    if (biography) {
-        data.biography = biography
+    data = {
+        givenName: givenName,
+        familyName: familyName,
+        fullname: `${givenName} ${familyName}`,
+        // username: username,
+        biography: biography,
+        className: className,
+        faculty: faculty,
+        birthday: birthday,
+        phone: phone,
+        gender: gender,
+        picture: pictureUrl,
+        backgroundPicture: backgroundPictureUrl,
+        backgroundPictureId: backgroundPictureCloundId,
+        pictureId: pictureCloundId
     }
-    if (className) {
-        data.className = className
-    }
-    if (faculty) {
-        data.faculty = faculty
-    }
-    if (birthday) {
-        data.birthday = birthday
-    }
-    if (phone) {
-        data.phone = phone
-    }
-    if (gender) {
-        data.gender = gender
-    }
-
     // newAccount =await account.findByIdAndUpdate(userId, data,  {new: true}).exec()
     account.findByIdAndUpdate(userId, data, { new: true })
         .then(user => {
