@@ -108,6 +108,8 @@ const getUser = (userId) => {
 const io = new Server(httpServer, {
   cors: {
     origin: "*",
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
+    credentials: true
   }
 })
 // console.log("New client connected " + socket.id); 
