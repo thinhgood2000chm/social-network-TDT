@@ -191,7 +191,6 @@ exports.updateAccount = async (req, res) => {
     if (picture && userInfo.pictureId) {
         await cloudinary.uploader.destroy(userInfo.pictureId)
     }
-    
     if (givenName) {
         data.givenName = givenName
         data.fullname= `${givenName} ${familyName}`
