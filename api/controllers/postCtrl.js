@@ -206,6 +206,7 @@ exports.createPost = async (req, res) => {
 }
 
 exports.updatePost = async (req, res) => {
+    console.log("vào n")
     let userId = req.userId
     let postID = req.params.postID
     let { postContent, postVideo } = req.body
@@ -217,12 +218,12 @@ exports.updatePost = async (req, res) => {
     }
 
     // image
-    let postImages = req.files
+    var postImages = req.files
     let image = null
     let imageId = null
     let newData = null
 
-    if (postImages?.length > 0) {
+    if (postImages && postImages.length > 0) {
         image = []
         imageId = []
         await Promise.all(postImages.map(async (file) => {

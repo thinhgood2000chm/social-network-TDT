@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: data-env-network
+  namespace: hcm-oc
+data: 
+  JWT_SECRET: sdfgjsioldrhoi2u34028374nvosdrpqkd12390@##%AXFD%$
+  CLOUD_NAME: drxflbnoa
+  CLOUD_API_KEY: "154968112154321"
+  CLOUD_API_SECRECT: G1oXYexi-KCYSXSKiW9jm8d-miY
+  PORT: "8080"
+  GOOGLE_CLIENT_ID: 100847206415-rbdoqmgsbdvlik3s3nmukildi3mbpivg.apps.googleusercontent.com

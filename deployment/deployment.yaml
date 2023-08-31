@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-tdt-deployment
+  namespace: hcm-oc
+  lebels:
+    apps: network-tdt-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: network-tdt-deployment
+  template:
+    metadata:
+      labels:
+        app: network-tdt-deployment
+    spec:
+      containers:
+        - name: network-tdt-deployment-docker
+          image: thinhnx75/network-tdt-docker
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: data-env-network
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-tdt-service
+  namespace: hcm-oc
+spec:
+  selector:
+    app: network-tdt-deployment
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
